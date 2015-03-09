@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, All Rights Reserved.
+/* Copyright (c) 2018 NoobsDNN, Anakin Authors, All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 #ifndef NBDNN_ICESWORD_CORE_DATA_TRAITS_H
 #define NBDNN_ICESWORD_CORE_DATA_TRAITS_H
 
-#include "icesword_types.h"
+#include "icesword/icesword_types.h"
 
 namespace noobsdnn{
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsDNN, Anakin Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -24,30 +24,26 @@ struct __true_type{};
 struct __false_type{};
 struct __invalid_type{};
 
-//! target type
+// target type
 enum TargetTypeEnum {
     eINVALID = -1,
     eNV = 1,
     eAMD = 2,
-    eARM = 3,
     eX86 = 4,
     eNVHX86 = 5,
-    eNVHARM = 6,
-    eARMGPU = 7,
-    eARMDSP
 };
 
 template <TargetTypeEnum T>
 struct TargetType {};
+
 // NV device without pinned memory
 typedef TargetType<eNV> NV;
-typedef TargetType<eARM> ARM;
-typedef TargetType<eARMGPU> ARMGPU;
 typedef TargetType<eAMD> AMD;
 typedef TargetType<eX86> X86;
+
 // NV device with pinned memory
 typedef TargetType<eNVHX86> NVHX86;
-//typedef TargetType<eNVHARM> NVHARM;
+
 // invalid target type, for target has only one memory block
 typedef TargetType<eINVALID> INVLD;
 
@@ -126,7 +122,6 @@ typedef enum{
     Active_tanh_fluid = 8,
     Active_stanh = 9,
     Active_prelu = 10
-
 } ActiveType;
 
 typedef enum{

@@ -24,8 +24,8 @@ template <DataType OpDtype,
           typename LayOutType_in,
           typename LayOutType_out>
 void compute_ref_inner_product_fwd(vector<Tensor<X86, inDtype, LayOutType_in>* > &src,
-                                        Tensor<X86, outDtype, LayOutType_out> &dst,
-                                        FcParam<Tensor<X86, OpDtype, LayOutType_op>> &param) {
+                                   Tensor<X86, outDtype, LayOutType_out> &dst,
+                                   FcParam<Tensor<X86, OpDtype, LayOutType_op>> &param) {
     typedef Tensor<X86, inDtype, LayOutType_in> inTensor;
     typedef Tensor<X86, OpDtype, LayOutType_op> opTensor;
     typedef Tensor<X86, outDtype, LayOutType_out> outTensor;

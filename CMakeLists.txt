@@ -1,4 +1,4 @@
-# Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+# Copyright (c) 2018 NoobsDNN, Anakin Authors, Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,17 +30,22 @@ set(VERSION_MINOR "0")
 set(VERSION_PATCH "1")
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
+# noobsdnn lib name and global directories
+set(noobsdnn_lib_so "noobsdnn")
+set(noobsdnn_lib_static "noobsdnn_static")
+
 # set root dir of modules
 set(NBDNN_ROOT ${PROJECT_SOURCE_DIR})
+include_directories(${NBDNN_ROOT})
+
 set(NBDNN_THIRD_PARTY_PATH ${NBDNN_ROOT}/third-party)
 set(NBDNN_ICESWORD ${NBDNN_ROOT}/icesword)
 set(NBDNN_UTILS ${NBDNN_ROOT}/utils)
 set(NBDNN_UNIT_TEST ${NBDNN_ROOT}/test)
 set(NBDNN_BENCHMARK ${NBDNN_ROOT}/benchmark)
 
-# noobsdnn lib name and global directories
-set(noobsdnn_lib_so "noobsdnn")
-set(noobsdnn_lib_static "noobsdnn_static")
+# generate cmake compiler comands
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ----------------------------------------------------------------------------
 # section: options for noobsdnn
@@ -52,15 +57,30 @@ noobsdnn_option(ENABLE_VERBOSE_MSG "Enable verbose=1 : compile msg during make."
 noobsdnn_option(DISABLE_ALL_WARNINGS "Disable all the warning msg during compile." YES)
 noobsdnn_option(ENABLE_NOISY_WARNINGS "Enable noisy warning msg during compile." NO if DISABLE_ALL_WARNINGS)
 
-#noobsdnn data float precision
+# noobsdnn data precision
 noobsdnn_option(NBDNN_TYPE_FP64 "define the FP64 for data precision." NO)
 noobsdnn_option(NBDNN_TYPE_FP32 "define the FP32 for data precision." YES)
 noobsdnn_option(NBDNN_TYPE_FP16 "define the FP16 for data precision." NO)
 noobsdnn_option(NBDNN_TYPE_INT8 "define the INT8 for data precision." YES)
 
-#select the plantform to build
+# select the plantform to build
 noobsdnn_option(USE_X86_PLACE "Select the build mode for X86 place." YES)
-noobsdnn_option(USE_GPU_PLACE "Select the build mode for GPU place." YES)
+noobsdnn_option(USE_GPU_PLACE "Select the build mode for GPU place." NO)
+
+# select platform
+noobsdnn_option(USE_NV_GPU "build for nvidia gpu" NO)
+
+# plantfrom details
+noobsdnn_option(NVIDIA_GPU "Use NVIDIA GPU place." YES if USE_GPU_PLACE AND USE_NV_GPU)
+
+# compile options for NVIDIA_GPU place
+noobsdnn_option(USE_CUDA "Use Cuda libs." YES if NVIDIA_GPU)
+noobsdnn_option(USE_CUBLAS "Use Cublas libs." YES if USE_CUDA)
+noobsdnn_option(USE_CURAND "Use Curand libs." YES if USE_CUDA)
+noobsdnn_option(USE_CUFFT "Use CuFFT libs." YES if USE_CUDA)
+noobsdnn_option(USE_CUDNN "Use Cudnn libs." YES if USE_CUDA)
+noobsdnn_option(BUILD_CROSS_PLANTFORM "Build anakin lib for any nvidia device plantform." YES if USE_CUDA)
+noobsdnn_option(BUILD_FAT_BIN "Build anakin cuda fat-bin lib for all device plantform" NO if BUILD_CROSS_PLANTFORM)
 
 if((NOT BUILD_FAT_BIN) AND (NOT BUILD_CROSS_PLANTFORM) AND USE_CUDA)
     # Select the only nvidia gpu arch you want to be built on
@@ -68,6 +88,7 @@ if((NOT BUILD_FAT_BIN) AND (NOT BUILD_CROSS_PLANTFORM) AND USE_CUDA)
 endif()
 
 if(USE_X86_PLACE)
+    # x86 rely on 3rd party libs 
     noobsdnn_option(USE_MKLDNN "Use MKLDNN libs." NO)
     noobsdnn_option(USE_MKLML "Use MKLML libs." YES)
     noobsdnn_option(USE_XBYAK "Use XBYAK libs." NO)
@@ -85,7 +106,6 @@ if(USE_GPU_PLACE)
     noobsdnn_option(BUILD_CUBIN "BUILD with the -cubin option in Device mode" NO if USE_CUDA)
     noobsdnn_option(COMPILE_PTX "Returns a list of PTX files generated from src." NO if USE_CUDA)
 endif()
-# build options for cuda.
 
 # using 3rd party libs
 noobsdnn_option(USE_LOGGER "Build baidu logger components." YES)
@@ -172,7 +192,6 @@ if(BUILD_WITH_UNIT_TEST)
 endif()
 
 noobsdnn_configure_status()
-
 
 #set(executable_output_path ${PROJECT_BINARY_DIR}/unit_test)
 

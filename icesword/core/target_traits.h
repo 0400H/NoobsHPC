@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, All Rights Reserved.
+/* Copyright (c) 2018 NoobsDNN, Anakin Authors, All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 #ifndef NBDNN_ICESWORD_CORE_TARGET_TRAITS_H
 #define NBDNN_ICESWORD_CORE_TARGET_TRAITS_H
-#include "core/common.h"
+#include "common.h"
 
 namespace noobsdnn{
 
@@ -25,7 +25,6 @@ struct __host_target{};
 struct __device_target{};
 
 struct __cuda_device{};
-struct __arm_device{};
 struct __amd_device{};
 struct __x86_device{};
 
@@ -56,12 +55,6 @@ template <>
 struct TargetTypeTraits<X86> {
     typedef __host_target target_category;
     typedef __x86_device target_type;
-};
-
-template <>
-struct TargetTypeTraits<ARM> {
-    typedef __host_target target_category;
-    typedef __arm_device target_type;
 };
 
 template <>

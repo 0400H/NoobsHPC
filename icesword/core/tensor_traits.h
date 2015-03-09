@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, All Rights Reserved.
+/* Copyright (c) 2018 NoobsDNN, Anakin Authors, All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 
 #ifndef NBDNN_ICESWORD_CORE_TENSOR_TRAITS_H
 #define NBDNN_ICESWORD_CORE_TENSOR_TRAITS_H
-#include "core/buffer.h"
-#include "core/data_traits.h"
+#include "buffer.h"
+#include "data_traits.h"
 
 namespace noobsdnn{
 

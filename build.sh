@@ -10,7 +10,7 @@ make -j `nproc`
 if [ $? -eq 0 ]; then
     echo "build success"
 else
-    echo "build fail" 
+    echo "build fail"
     exit -1
 fi
 

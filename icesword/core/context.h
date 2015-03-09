@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, All Rights Reserved.
+/* Copyright (c) 2018 Anakin Authors, All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -63,10 +63,6 @@ public:
         _compute_stream_id = ctx._compute_stream_id;
         _stream_compute = ctx._stream_compute;
         _stream_data = ctx._stream_data;
-#ifdef USE_ARM_PLACE
-        _act_ids = ctx._act_ids;
-        _mode = ctx._mode;
-#endif
     }
 
     Context& operator=(const Context& ctx){
@@ -75,10 +71,6 @@ public:
         this->_compute_stream_id = ctx._compute_stream_id;
         this->_stream_data = ctx._stream_data;
         this->_stream_compute = ctx._stream_compute;
-#ifdef USE_ARM_PLACE
-        this->_act_ids = ctx._act_ids;
-        this->_mode = ctx._mode;
-#endif
         return *this;
     }
 

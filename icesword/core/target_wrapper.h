@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, All Rights Reserved.
+/* Copyright (c) 2018 NoobsDNN, Anakin Authors, All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 #ifndef NBDNN_ICESWORD_CORE_TARGET_WRAPPER_H
 #define NBDNN_ICESWORD_CORE_TARGET_WRAPPER_H
-#include "core/target_traits.h"
+#include "target_traits.h"
 #include <memory>
 
 namespace noobsdnn {

@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsDNN, Anakin Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 #define NBDNN_ICESWORD_CORE_TENSOR_H
 
 #include "limits.h"
-#include "core/shape.h"
-#include "core/events.h"
-#include "core/tensor_traits.h"
+#include "shape.h"
+#include "events.h"
+#include "tensor_traits.h"
 
 namespace noobsdnn{
 

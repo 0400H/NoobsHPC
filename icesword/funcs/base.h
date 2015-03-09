@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsDNN, Anakin Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -27,9 +27,8 @@ namespace noobsdnn {
 namespace icesword {
 
 template<typename inTensor, typename outTensor, typename opTensor,
-    template <typename T0, typename T1, typename T2, typename T3> class Impl,
-    template <typename T0> class Param
-    >
+         template <typename T0, typename T1, typename T2, typename T3> class Impl,
+         template <typename T0> class Param>
 class BaseFunc {
 public:
     typedef typename inTensor::targetType_t targetType_t;
