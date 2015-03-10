@@ -88,58 +88,6 @@ struct DataTrait<Ttype, AK_UINT32> {
     typedef unsigned int dtype;
 };
 
-#ifdef USE_OPENCL
-struct ClMem{
-    ClMem(){
-        dmem = nullptr;
-        offset = 0;
-    }
-
-    ClMem(cl_mem* mem_in, int offset_in = 0) {
-        dmem = mem_in;
-        offset = offset_in;
-    }
-
-    ClMem(ClMem& right) {
-        dmem = right.dmem;
-        offset = right.offset;
-    }
-
-    ClMem& operator=(ClMem& right) {
-        this->dmem = right.dmem;
-        this->offset = right.offset;
-        return *this;
-    }
-
-    ClMem& operator+(int offset_in) {
-        this->offset += offset_in;
-        return *this;
-    }
-
-    int offset{0};
-    cl_mem* dmem{nullptr};
-};
-
-template <>
-struct DataTrait<AMD, AK_FLOAT> {
-    typedef ClMem Dtype;
-    typedef float dtype;
-};
-
-template <>
-struct DataTrait<AMD, AK_DOUBLE> {
-    typedef ClMem Dtype;
-    typedef double dtype;
-};
-
-template <>
-struct DataTrait<AMD, AK_INT8> {
-    typedef ClMem Dtype;
-    typedef char dtype;
-};
-
-#endif
-
 } //namespace icesword
 
 } //namespace noobsdnn

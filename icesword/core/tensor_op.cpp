@@ -1,4 +1,5 @@
 #include "tensor_op.h"
+
 #include <cstdlib>
 #include <random>
 
@@ -140,14 +141,6 @@ template void tensor_cmp_host<float>(const float* src1, const float* src2, \
 template void tensor_cmp_host<char>(const char* src1, const char* src2, int size, \
                                     double& max_ratio, double& max_diff);
 
-template void fill_tensor_host_const<Tensor<X86, AK_INT8, NCHW_C4>>(Tensor<X86, AK_INT8, NCHW_C4>&
-        tensor, char value);
-template void fill_tensor_host_rand<Tensor<X86, AK_INT8, NCHW_C4>>(Tensor<X86, AK_INT8, NCHW_C4>&
-        tensor);
-template void fill_tensor_host_rand<Tensor<X86, AK_INT32, NCHW>>(Tensor<X86, AK_INT32, NCHW>& tensor);
-
-template void fill_tensor_host_const<Tensor<X86, AK_INT32, NCHW>>(Tensor<X86, AK_INT32, NCHW>& tensor, int value);
-
 template <>
 void print_tensor_host<Tensor<X86, AK_INT8, NCHW_C4>>(Tensor<X86, AK_INT8, NCHW_C4>& tensor) {
     typedef typename Tensor<X86, AK_INT8, NCHW_C4>::Dtype Dtype;
@@ -167,11 +160,6 @@ void print_tensor_host<Tensor<X86, AK_INT8, NCHW_C4>>(Tensor<X86, AK_INT8, NCHW_
 }
 
 #ifdef USE_X86_PLACE
-
-template void fill_tensor_host_const<Tensor<X86, AK_FLOAT, NCHW_C16>>(Tensor<X86, AK_FLOAT, NCHW_C16>&
-        tensor, float value);
-template void fill_tensor_host_rand<Tensor<X86, AK_FLOAT, NCHW_C16>>(Tensor<X86, AK_FLOAT, NCHW_C16>&
-        tensor);
 
 template <>
 void print_tensor_host<Tensor<X86, AK_FLOAT, NCHW_C16>>(Tensor<X86, AK_FLOAT, NCHW_C16>& tensor) {
@@ -240,7 +228,7 @@ void reorder<Tensor<X86, AK_UINT8, NCHW>, Tensor<X86, AK_UINT8, NHWC>>(Tensor<X8
         }
     };
     int num = dst.num();
-#pragma omp parallel for collapse(3) schedule(static)
+    #pragma omp parallel for collapse(3) schedule(static)
     for (int n = 0; n < num; ++n) {
         for (int h = 0; h < height; ++h) {
             for (int w = 0; w < width; ++w) {
@@ -271,7 +259,7 @@ void reorder<Tensor<X86, AK_FLOAT, NCHW>, Tensor<X86, AK_UINT8, NCHW>>(Tensor<X8
         }
     };
     int num = dst.num();
-#pragma omp parallel for collapse(3) schedule(static)
+    #pragma omp parallel for collapse(3) schedule(static)
     for (int n = 0; n < num; ++n) {
         for (int c = 0; c < channel; ++c) {
             for (int h = 0; h < height; ++h) {
@@ -305,7 +293,7 @@ void reorder<Tensor<X86, AK_FLOAT, NCHW>, Tensor<X86, AK_FLOAT, NCHW_C16>>(Tenso
     int num = dst.num();
     int channel = src.channel();
     int channel_blk = channel / blksize;
-#pragma omp parallel for collapse(3) schedule(static)
+    #pragma omp parallel for collapse(3) schedule(static)
     for (int n = 0; n < num; ++n) {
         for (int C = 0; C < channel_blk; ++C) {
             for (int h = 0; h < height; ++h) {
@@ -340,7 +328,7 @@ void reorder<Tensor<X86, AK_FLOAT, NCHW_C16>, Tensor<X86, AK_FLOAT, NCHW>>(Tenso
     int num = dst.num();
     int channel = dst.channel();
     int channel_blk = channel / blksize;
-#pragma omp parallel for collapse(3) schedule(static)
+    #pragma omp parallel for collapse(3) schedule(static)
     for (int n = 0; n < num; ++n) {
         for (int C = 0; C < channel_blk; ++C) {
             for (int h = 0; h < height; ++h) {
@@ -374,7 +362,7 @@ void reorder<Tensor<X86, AK_FLOAT, NCHW_C8>, Tensor<X86, AK_FLOAT, NCHW>>(Tensor
     int num = dst.num();
     int channel = dst.channel();
     int channel_blk = channel / blksize;
-#pragma omp parallel for collapse(3) schedule(static)
+    #pragma omp parallel for collapse(3) schedule(static)
     for (int n = 0; n < num; ++n) {
         for (int C = 0; C < channel_blk; ++C) {
             for (int h = 0; h < height; ++h) {
@@ -388,22 +376,6 @@ void reorder<Tensor<X86, AK_FLOAT, NCHW_C8>, Tensor<X86, AK_FLOAT, NCHW>>(Tensor
     }
     return;
 }
-#endif
-
-#ifdef USE_ARM_PLACE
-FILL_TENSOR_HOST(ARM, AK_FLOAT, NCHW);
-FILL_TENSOR_HOST(ARM, AK_FLOAT, NHWC);
-FILL_TENSOR_HOST(ARM, AK_FLOAT, NHW);
-FILL_TENSOR_HOST(ARM, AK_FLOAT, NW);
-FILL_TENSOR_HOST(ARM, AK_FLOAT, HW);
-FILL_TENSOR_HOST(ARM, AK_FLOAT, W);
-
-FILL_TENSOR_HOST(ARM, AK_INT8, NCHW);
-FILL_TENSOR_HOST(ARM, AK_INT8, NHWC);
-FILL_TENSOR_HOST(ARM, AK_INT8, NHW);
-FILL_TENSOR_HOST(ARM, AK_INT8, NW);
-FILL_TENSOR_HOST(ARM, AK_INT8, HW);
-FILL_TENSOR_HOST(ARM, AK_INT8, W);
 #endif
 
 #ifdef USE_CUDA

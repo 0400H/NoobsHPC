@@ -15,6 +15,7 @@
 
 #ifndef NBDNN_ICESWORD_CORE_TARGET_WRAPPER_H
 #define NBDNN_ICESWORD_CORE_TARGET_WRAPPER_H
+
 #include "target_traits.h"
 #include <memory>
 

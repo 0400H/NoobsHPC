@@ -15,6 +15,7 @@
 
 #ifndef NBDNN_ICESWORD_CORE_TENSOR_TRAITS_H
 #define NBDNN_ICESWORD_CORE_TENSOR_TRAITS_H
+
 #include "buffer.h"
 #include "data_traits.h"
 

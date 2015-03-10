@@ -22,8 +22,8 @@
 #include <typeinfo>
 #include <stdlib.h>
 
-#include "utils/logger/logger.h"
 #include "noobsdnn_config.h"
+#include "utils/logger/logger.h"
 #include "icesword/icesword_types.h"
 
 namespace noobsdnn{
@@ -138,17 +138,9 @@ const char* cublas_get_errorstring(cublasStatus_t error);
 const char* cudnn_get_errorstring(cudnnStatus_t status);
 #endif //USE_CUDNN
 
-#ifdef USE_AMD
-#include <hip/hip_runtime_api.h>
-#endif
-
-
-#ifdef USE_ARM_PLACE
 #ifdef USE_OPENMP
 #include <omp.h>
-#include <arm_neon.h>
 #endif //openmp
-#endif //ARM
 
 #endif //NBDNN_ICESWORD_CORE_COMMON_H
 

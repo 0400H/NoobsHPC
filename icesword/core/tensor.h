@@ -16,7 +16,6 @@
 #ifndef NBDNN_ICESWORD_CORE_TENSOR_H
 #define NBDNN_ICESWORD_CORE_TENSOR_H
 
-#include "limits.h"
 #include "shape.h"
 #include "events.h"
 #include "tensor_traits.h"
@@ -28,38 +27,8 @@ namespace icesword{
 #define INSTANTIATE_TENSOR(TargetType, datatype, LayOutType) \
   template class Tensor<TargetType, datatype, LayOutType>;
 
-class TensorBase {
-public:
-    TensorBase() {}
-    virtual ~TensorBase() {}
-    virtual SaberStatus set_shape(Shape valid_shape, Shape shape = Shape(), \
-        Shape offset = Shape()) = 0;
-    virtual SaberStatus reshape(Shape valid_shape, Shape shape = Shape(), \
-        Shape offset = Shape()) = 0;
-    virtual SaberStatus re_alloc(Shape shape) = 0;
-    virtual bool is_continue_mem() const = 0;
-    virtual int size() const = 0;
-    virtual int valid_size() const = 0;
-    virtual int count(int start, int end) const = 0;
-    virtual int count_valid(int start, int end) const = 0;
-    virtual int dims() const = 0;
-    virtual Shape shape() const = 0;
-    virtual Shape valid_shape() const = 0;
-    virtual Shape get_stride() const = 0;
-    virtual Shape offset() const = 0;
-    virtual int device_id() const = 0;
-    virtual int num() const = 0;
-    virtual int num_index() const = 0;
-    virtual int channel() const = 0;
-    virtual int channel_index() const = 0;
-    virtual int height() const = 0;
-    virtual int height_index() const = 0;
-    virtual int width() const = 0;
-    virtual int width_index() const = 0;
-};
-
 template<typename TargetType, DataType datatype, typename LayOutType = NCHW>
-class Tensor : public TensorBase {
+class Tensor {
 public:
     typedef TargetType targetType_t;
     typedef typename DataTrait<TargetType, datatype>::Dtype Dtype;
@@ -95,27 +64,7 @@ public:
         _buf = std::make_shared<Buffer<TargetType>>(shape.count() * _type_len);
         _is_subbuf = false;
     }
-#if 0
-    /**
-     * \brief constructor with currently used shape, offset and entire memory shape,
-     * memory is alloced according to the shape
-     */
-    Tensor(Shape shape, Shape valid_shape, Shape offset) {
-        CHECK_EQ(shape.dims(), TensorAPI::layout_dims::value) << \
-            "shape dims is not matched to layout type";
-        CHECK_EQ(valid_shape.dims(), TensorAPI::layout_dims::value) << \
-            "valid shape dims is not matched to layout type";
-        CHECK_EQ(offset.dims(), TensorAPI::layout_dims::value) << \
-            "offset dims is not matched to layout type";
-        CHECK_EQ(true, (offset + valid_shape) <= shape) << \
-            "valid shape + offset should <= shape";
-        _shape = shape;
-        _valid_shape = valid_shape;
-        _offset = offset;
-        _buf = std::make_shared<Buffer<TargetType, datatype>>(_shape.count());
-        _is_subbuf = false;
-    }
-#endif
+
     /**
      * \brief Constructor with allocated data ptr and entire memory shape.
      */

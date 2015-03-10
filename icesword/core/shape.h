@@ -17,6 +17,7 @@
 #define NBDNN_ICESWORD_CORE_SHAPE_H
 
 #include <vector>
+
 #include "limits.h"
 #include "common.h"
 
