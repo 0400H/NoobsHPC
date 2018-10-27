@@ -1,14 +1,14 @@
-# [NoobsDL](https://github.com/0400H/NoobsDL)
+# [NoobsDNN](https://github.com/0400H/NoobsDNN)
 
-[![Build Status](https://travis-ci.org/PaddlePaddle/NoobsDNN.svg?branch=developing)](https://travis-ci.org/PaddlePaddle/NoobsDNN)
+[![Build Status]()](https://github.com/0400H/NoobsDNN)
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](LICENSE)
-[![Coverage Status](https://coveralls.io/repos/github/xklnono/NoobsDNN/badge.svg)](https://coveralls.io/github/xklnono/NoobsDNN)
+[![Coverage Status]()](https://github.com/0400H/NoobsDNN)
 
-Welcome to the NoobsDL GitHub.
+Welcome to the NoobsDNN GitHub.
 
-[NoobsDL](https://github.com/0400H/NoobsDL) is a C++ DeepLearning inference and training engine which is used to learn DL.
+[NoobsDNN](https://github.com/0400H/NoobsDNN) is a C++ DeepLearning inference and training engine which is used to learn DNN.
 
-Secondary development on Baidu's DeepLearning open source framework [NoobsDNN](https://github.com/PaddlePaddle/NoobsDNN).
+Secondary development on Baidu's DeepLearning open source framework [Anakin](https://github.com/PaddlePaddle/Anakin).
 
 ## Features
 - Suitable for DiaoBaoXia ( C++ Noobs ) to learn and use
@@ -18,12 +18,12 @@ Secondary development on Baidu's DeepLearning open source framework [NoobsDNN](h
 - ./run_benchmark.sh
 
 ## Documentation
-- You can find wiki [here](https://github.com/0400H/NoobsDL/issues)
+- You can find wiki [here](https://github.com/0400H/NoobsDNN/issues)
 - We appreciate your contributions!
 
 ## Ask Questions
 
-You are welcome to submit questions and bug reports as [Github Issues](https://github.com/0400H/NoobsDL/issues).
+You are welcome to submit questions and bug reports as [Github Issues](https://github.com/0400H/NoobsDNN/issues).
 
 ## Copyright and License
-NoobsDL is provided under the [Apache-2.0 license](LICENSE).
+NoobsDNN is provided under the [Apache-2.0 license](LICENSE).
