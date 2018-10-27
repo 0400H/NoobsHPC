@@ -1,8 +1,8 @@
 # [NoobsDNN](https://github.com/0400H/NoobsDNN)
 
-[![Build Status]()](https://github.com/0400H/NoobsDNN)
+[![Build Status](https://travis-ci.org/PaddlePaddle/Anakin.svg?branch=developing)](https://github.com/0400H/NoobsDNN)
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](LICENSE)
-[![Coverage Status]()](https://github.com/0400H/NoobsDNN)
+[![Coverage Status](https://coveralls.io/repos/github/xklnono/Anakin/badge.svg)](https://github.com/0400H/NoobsDNN)
 
 Welcome to the NoobsDNN GitHub.
 
