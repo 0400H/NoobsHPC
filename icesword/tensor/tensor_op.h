@@ -16,6 +16,8 @@
 #ifndef NBDNN_ICESWORD_TENSOR_TENSOR_OP_H
 #define NBDNN_ICESWORD_TENSOR_TENSOR_OP_H
 
+#include <random>
+
 #include "icesword/tensor/tensor.h"
 
 namespace noobsdnn{
