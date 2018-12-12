@@ -1,26 +1,28 @@
-/* Copyright (c) 2016 NoobsDNN Authors All Rights Reserve.
+/* Copyright (c) 2018 NoobsDNN, Anakin Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+       http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
-   limitations under the License. */
+   limitations under the License.
+*/
 
 #ifndef NBDNN_ICESWORD_CORE_DEVICE_H
 #define NBDNN_ICESWORD_CORE_DEVICE_H
-#include "target_wrapper.h"
+
+#include "icesword/core/target_wrapper.h"
 
 namespace noobsdnn{
 
 namespace icesword{
 
-template <typename TargetType>
+template <TargetType TType>
 struct DeviceInfo{
 	int _idx;
 	std::string _device_name;
@@ -37,10 +39,10 @@ struct DeviceInfo{
 	std::vector<int> _cluster_ids;
 };
 
-template <typename TargetType>
+template <TargetType TType>
 struct Device {
 
-	typedef TargetWrapper<TargetType> API;
+	typedef TargetWrapper<TType, __host_target> API;
 
     Device(int max_stream = 4) : _max_stream(max_stream){
     	get_info();
@@ -48,7 +50,7 @@ struct Device {
     }
     void get_info();
     void create_stream();
-    DeviceInfo<TargetType> _info;
+    DeviceInfo<TType> _info;
 	int _max_stream;
 
     std::vector<typename API::stream_t> _data_stream;

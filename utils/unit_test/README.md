@@ -27,7 +27,7 @@ using ::noobsdnn::test::Test;
  * \brief 自定义的测试class，继承自Test类。
  *        这是单元测试的一个单元集合，包含一组
  *        测试函数test function。 
- */
+**/
 class TestClass2:public Test{
 public:
 	TestClass2():name("second inner param."){}
@@ -36,13 +36,13 @@ public:
 	 * \brief setup 函数用来对所有包含TestClass2的测试函数提供初始化，
 	 *        其功能在所有函数开始运行的开始阶段自动调用，你可以实例化
      *        自己的setup函数内容。
-	 */
+	**/
     void SetUp(){}
 	/** 
 	 * \brief tear down 函数用来对所有本测试类的测试函数提供终止时操作，
 	 *        典型的用法比如释放资源文件，进行垃圾回收等等，你可以自己
 	 *		  实例化这个函数内容。
-	 */
+	**/
     void TearDown(){}
 
 protected:
@@ -50,13 +50,13 @@ protected:
 	 * \brief protected 里面可以包含你想要共享给所有测试函数的公共变量，
 	 * 		  比如name变量，它在所有的TestClass2的TEST测试函数的实例中
 	 *		  可见。
-	 */
+	**/
 	std::string name;
 };
 
 /** 
  * \brief 添加TestClass1，与TestClass2功能类似，你可以添加多个testclass。
- */
+**/
 class TestClass1:public Test{
 public:
 
@@ -73,7 +73,7 @@ protected:
 /**
  * \brief 添加单元测试实例，TEST(className, functionName)用来声明一个测试案例，
  * 		  可以在其中添加任意测试内容。
- */
+**/
 TEST(TestClass1,testfunc0){
 	std::cout<<" FUNCTION_0 :test great suc! param=1? "<<name<<std::endl;
 	for(int i=0;i<1000000;i++){}

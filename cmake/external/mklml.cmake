@@ -20,16 +20,15 @@ include(ExternalProject)
 set(MKLML_PROJECT       "extern_mklml")
 set(MKLML_VER           "mklml_lnx_2019.0.20180710")
 #set(MKLML_URL           "https://github.com/01org/mkl-dnn/releases/download/v0.16/${MKLML_VER}.tgz")
-set(MKLML_URL          "http://paddlepaddledeps.cdn.bcebos.com/${MKLML_VER}.tgz")
-set(MKLML_SOURCE_DIR    "${NBDNN_TEMP_THIRD_PARTY_PATH}/mklml")
+set(MKLML_URL           "http://paddlepaddledeps.cdn.bcebos.com/${MKLML_VER}.tgz")
+set(MKLML_SOURCE_DIR    "${NBDNN_THIRD_PARTY_PATH}/mklml")
 set(MKLML_DOWNLOAD_DIR  "${MKLML_SOURCE_DIR}/src/${MKLML_PROJECT}")
 set(MKLML_DST_DIR       ".")
-set(MKLML_INSTALL_ROOT   ${NBDNN_THIRD_PARTY_PATH}/mklml)
+set(MKLML_INSTALL_ROOT  ${NBDNN_THIRD_PARTY_PATH}/mklml)
 set(MKLML_LIB           ${MKLML_INSTALL_ROOT}/lib/libmklml_intel.so)
 set(MKLML_IOMP_LIB      ${MKLML_INSTALL_ROOT}/lib/libiomp5.so)
 
 message(STATUS "Scanning external modules ${Green}MKLML${ColourReset} ...")
-
 
 include_directories(${MKLML_INSTALL_ROOT}/include)
 
@@ -60,11 +59,10 @@ list(APPEND NBDNN_ICESWORD_DEPENDENCIES mklml)
 list(APPEND NBDNN_LINKER_LIBS ${MKLML_LIB};${MKLML_IOMP_LIB})
 
 set(OPENMP_FLAGS "-fopenmp")
-#set(CMAKE_C_CREATE_SHARED_LIBRARY_FORBIDDEN_FLAGS ${OPENMP_FLAGS})
+set(CMAKE_C_CREATE_SHARED_LIBRARY_FORBIDDEN_FLAGS ${OPENMP_FLAGS})
 set(CMAKE_CXX_CREATE_SHARED_LIBRARY_FORBIDDEN_FLAGS ${OPENMP_FLAGS})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OPENMP_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPENMP_FLAGS}")
-
 
 # iomp5 must be installed
 install(FILES ${MKLML_LIB} ${MKLML_IOMP_LIB} DESTINATION lib)

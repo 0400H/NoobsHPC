@@ -45,7 +45,7 @@ namespace logger {
       /**
        *  @brief  text class: hold char* type
        *
-       */
+      **/
       class text
       {
       public:
@@ -76,7 +76,7 @@ namespace logger {
       /**
        *  @brief  basic message struct
        *
-       */
+      **/
       struct Message
       {
         VerBoseType   verbose;   // Already part of preamble
@@ -90,7 +90,7 @@ namespace logger {
       /**
        *  @brief  basic message struct
        *
-       */
+      **/
       class ErrContext
       {
       public:
@@ -124,7 +124,7 @@ namespace logger {
       /**
        *  @brief  basic callback struct
        *
-       */
+      **/
       class Callback
       {
 	  public:
@@ -169,15 +169,15 @@ namespace logger {
       /**
        *  @brief  func register
        *
-       */
+      **/
       namespace funcRegister
       {
         /****************************************************************************/
-        /*                            logger init                                   */
+        /*                            logger init                                  **/
         /***************t************************************************************/
         void initial(const char* argv0);
         /****************************************************************************/
-        /*                            function register                             */
+        /*                            function register                            **/
         /***************t************************************************************/
         inline const char* black();
         inline const char* red();
@@ -198,7 +198,7 @@ namespace logger {
         inline const char* reset();
 
         /****************************************************************************/
-        /*                            log file manipulate                           */
+        /*                            log file manipulate                          **/
         /***************t************************************************************/
 		void get_username();
 		void get_program_name(const char* argv0);
@@ -220,24 +220,24 @@ namespace logger {
         const char* filename(const char* path);
 
         /****************************************************************************/
-        /*                            error context manipulate                      */
+        /*                            error context manipulate                     **/
         /***************t************************************************************/
         text get_error_context();
         text get_error_context_for(const ErrContext* head);
         /****************************************************************************/
-        /*                            stack tracing manipulate                      */
+        /*                            stack tracing manipulate                     **/
         /***************t************************************************************/
         void do_replacements(const PairList& replacements, std::string& str);
         std::string set_friendly_stacktrace(const std::string& input);
         std::string stacktrace_as_stdstring(int skip);
         text stacktrace(int skip);
         /****************************************************************************/
-        /*                            multi pthread manipulate                      */
+        /*                            multi pthread manipulate                     **/
         /***************t************************************************************/
         void set_thread_name(const char* name);
         void get_thread_name(char* buffer, unsigned long long length, bool right_align_hext_id);
         /****************************************************************************/
-        /*                            log stderr manipulate                         */
+        /*                            log stderr manipulate                        **/
         /****************************************************************************/
         void print_preamble(char* out_buff, size_t out_buff_size, VerBoseType    verbose, const char* file, unsigned line);
         void log_message(int stack_trace_skip, Message& message, bool abort_if_fatal);
@@ -257,7 +257,7 @@ namespace logger {
         void log(VerBoseType verbose, const char* file, unsigned line, const char* format, ...) LOGGER_CHECK_PRINTF(4, 5);
         LOGGER_NORET void log_and_abort(int stack_trace_skip, const char* expr, const char* file, unsigned line, const char* format, ...) LOGGER_CHECK_PRINTF(5, 6);
         /****************************************************************************/
-        /*                             signal manipulate                            */
+        /*                             signal manipulate                           **/
         /****************************************************************************/
         void write_to_stderr(const char* data, size_t size);
         void write_to_stderr(const char* data);
@@ -268,7 +268,7 @@ namespace logger {
       /**
        *  @brief  logger class
        *
-       */
+      **/
       class loggerMsg
       {
       public:
@@ -301,7 +301,7 @@ namespace logger {
        * @brief voidify the class such as logger for macro defines
        *
        * usage: voidify()(loggerMsg(...)).
-       */
+      **/
       class voidify
       {
       public:
@@ -647,7 +647,7 @@ inline std::string set_friendly_stacktrace(const std::string& input)
 // | _Z1fIiEvi     | void f<int>(int)
 // | _ZN1N1fE      | N::f
 // | _ZN3Foo3BarEv | Foo::Bar()
-// | _Zrm1XS_"     | operator%(X, X)
+// | _Zrm1XS_"     | layer%(X, X)
 // | _ZN3FooC1Ev   | Foo::Foo()
 // | _Z1fSs        | f(std::basic_string<char,
 // |               |   std::char_traits<char>,
@@ -665,10 +665,10 @@ inline std::string stacktrace_as_stdstring(int skip)
   	char buf[1024];
 
    	// @brief typedef struct {
-   	//          const char *dli_fname;  /* Pathname of shared object that contains address */
-   	//          void       *dli_fbase;  /* Address at which shared object is loaded */
-   	//          const char *dli_sname;  /* Name of nearest symbol with address lower than addr */
-   	//          void       *dli_saddr;  /* Exact address of symbol named in dli_sname */
+   	//          const char *dli_fname;  /* Pathname of shared object that contains address**/
+   	//          void       *dli_fbase;  /* Address at which shared object is loaded**/
+   	//          const char *dli_sname;  /* Name of nearest symbol with address lower than addr**/
+   	//          void       *dli_saddr;  /* Exact address of symbol named in dli_sname**/
    	//         } Dl_info;
    	// If no symbol matching addr could be found, then dli_sname and dli_saddr are set to NULL.
    	// The function dladdr() takes a function pointer and tries to resolve name and file where it is located
@@ -1019,7 +1019,7 @@ inline void install_logger_signal_handlers() {
 /**
  *  \brief logger init func
  *
- */
+**/
 inline void initial(const char* argv0){
   LoggerConfig::init();
   // get host and user info.

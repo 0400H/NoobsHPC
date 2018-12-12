@@ -1,4 +1,4 @@
-# Copyright (c) 2018 NoobsDNN, Anakin Authors, Inc. All Rights Reserved.
+# Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@ set(MIN_CMAKE_V 3.0)
 cmake_minimum_required(VERSION ${MIN_CMAKE_V} FATAL_ERROR)
 
 project(NBDNN C CXX)
-include(cmake/message_colors.cmake)
+
+include(cmake/colors.cmake)
 include(cmake/utils.cmake)
-include(cmake/configure_status.cmake)
 
 # ----------------------------------------------------------------------------
 # section: global noobsdnn version and lib name
@@ -36,16 +36,18 @@ set(noobsdnn_lib_static "noobsdnn_static")
 
 # set root dir of modules
 set(NBDNN_ROOT ${PROJECT_SOURCE_DIR})
-include_directories(${NBDNN_ROOT})
-
-set(NBDNN_THIRD_PARTY_PATH ${NBDNN_ROOT}/third-party)
+set(NBDNN_CMAKE ${NBDNN_ROOT}/cmake)
+set(NBDNN_INCLUDE ${NBDNN_ROOT}/include)
 set(NBDNN_ICESWORD ${NBDNN_ROOT}/icesword)
 set(NBDNN_UTILS ${NBDNN_ROOT}/utils)
 set(NBDNN_UNIT_TEST ${NBDNN_ROOT}/test)
 set(NBDNN_BENCHMARK ${NBDNN_ROOT}/benchmark)
+set(NBDNN_THIRD_PARTY_PATH ${NBDNN_ROOT}/third-party)
 
-# generate cmake compiler comands
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# set build and output dir
+set(NBDNN_BUILD ${NBDNN_ROOT}/build)
+set(LIBRARY_OUTPUT_DIRECTORY ${NBDNN_BUILD})
+set(RUNTIME_OUTPUT_DIRECTORY ${NBDNN_BUILD}/output)
 
 # ----------------------------------------------------------------------------
 # section: options for noobsdnn
@@ -63,135 +65,81 @@ noobsdnn_option(NBDNN_TYPE_FP32 "define the FP32 for data precision." YES)
 noobsdnn_option(NBDNN_TYPE_FP16 "define the FP16 for data precision." NO)
 noobsdnn_option(NBDNN_TYPE_INT8 "define the INT8 for data precision." YES)
 
+# using common library
+noobsdnn_option(USE_OPENMP "Use Openmp." YES)
+noobsdnn_option(USE_LOGGER "Build baidu logger components." YES)
+
 # select the plantform to build
 noobsdnn_option(USE_X86_PLACE "Select the build mode for X86 place." YES)
-noobsdnn_option(USE_GPU_PLACE "Select the build mode for GPU place." NO)
-
-# select platform
-noobsdnn_option(USE_NV_GPU "build for nvidia gpu" NO)
-
-# plantfrom details
-noobsdnn_option(NVIDIA_GPU "Use NVIDIA GPU place." YES if USE_GPU_PLACE AND USE_NV_GPU)
-
-# compile options for NVIDIA_GPU place
-noobsdnn_option(USE_CUDA "Use Cuda libs." YES if NVIDIA_GPU)
-noobsdnn_option(USE_CUBLAS "Use Cublas libs." YES if USE_CUDA)
-noobsdnn_option(USE_CURAND "Use Curand libs." YES if USE_CUDA)
-noobsdnn_option(USE_CUFFT "Use CuFFT libs." YES if USE_CUDA)
-noobsdnn_option(USE_CUDNN "Use Cudnn libs." YES if USE_CUDA)
-noobsdnn_option(BUILD_CROSS_PLANTFORM "Build anakin lib for any nvidia device plantform." YES if USE_CUDA)
-noobsdnn_option(BUILD_FAT_BIN "Build anakin cuda fat-bin lib for all device plantform" NO if BUILD_CROSS_PLANTFORM)
-
-if((NOT BUILD_FAT_BIN) AND (NOT BUILD_CROSS_PLANTFORM) AND USE_CUDA)
-    # Select the only nvidia gpu arch you want to be built on
-    set(TARGET_GPUARCH 6.1)
-endif()
-
-if(USE_X86_PLACE)
-    # x86 rely on 3rd party libs 
-    noobsdnn_option(USE_MKLDNN "Use MKLDNN libs." NO)
-    noobsdnn_option(USE_MKLML "Use MKLML libs." YES)
-    noobsdnn_option(USE_XBYAK "Use XBYAK libs." NO)
-endif()
-
-if(USE_GPU_PLACE)
-    # compile options for NVIDIA_GPU place
-    noobsdnn_option(USE_CUDA "Use Cuda libs." YES if NVIDIA_GPU)
-    noobsdnn_option(USE_CUBLAS "Use Cublas libs." YES if USE_CUDA)
-    noobsdnn_option(USE_CURAND "Use Curand libs." YES if USE_CUDA)
-    noobsdnn_option(USE_CUFFT "Use CuFFT libs." YES if USE_CUDA)
-    noobsdnn_option(USE_CUDNN "Use Cudnn libs." YES if USE_CUDA)
-    noobsdnn_option(BUILD_CROSS_PLANTFORM "Build anakin lib for any nvidia device plantform." YES if USE_CUDA)
-    noobsdnn_option(BUILD_FAT_BIN "Build anakin cuda fat-bin lib for all device plantform" NO if BUILD_CROSS_PLANTFORM)
-    noobsdnn_option(BUILD_CUBIN "BUILD with the -cubin option in Device mode" NO if USE_CUDA)
-    noobsdnn_option(COMPILE_PTX "Returns a list of PTX files generated from src." NO if USE_CUDA)
-endif()
-
-# using 3rd party libs
-noobsdnn_option(USE_LOGGER "Build baidu logger components." YES)
-noobsdnn_option(USE_GLOG "Build Glog components." NO if NOT USE_LOGGER)
-noobsdnn_option(USE_PROTOBUF "Build Google protobuf components." NO)
-noobsdnn_option(USE_OPENMP "Use Openmp." YES)
-noobsdnn_option(USE_GTEST "Use googletest libs." NO if BUILD_WITH_UNIT_TEST)
-noobsdnn_option(USE_OPENCL "Use OpenCL ." NO)
-noobsdnn_option(USE_GFLAGS "Build Google gflags components." NO)
 
 # build components
 noobsdnn_option(BUILD_WITH_UNIT_TEST "Build noobsdnn unit_test components." YES)
-noobsdnn_option(BUILD_EXAMPLES "build detection and classification examples" NO)
+noobsdnn_option(BUILD_WITH_BENCHMARK "Build noobsdnn benchmark components." NO)
 
-# build target
+# build library target
 noobsdnn_option(BUILD_SHARED "Build noobsdnn shared lib." YES)
 noobsdnn_option(BUILD_STATIC "Build noobsdnn static lib." YES if NOT BUILD_SHARED)
+
+# x86 rely on 3rd party libs
+if(USE_X86_PLACE)
+    noobsdnn_option(USE_MKLDNN "Use MKLDNN libs." NO)
+    noobsdnn_option(USE_MKLML "Use MKLML libs." YES)
+    noobsdnn_option(USE_XBYAK "Use XBYAK libs." YES)
+endif()
+
+# ----------------------------------------------------------------------------
+# section: find modules and configure
+# ----------------------------------------------------------------------------
+
+if(USE_MKLML)
+    include(${NBDNN_CMAKE}/external/mklml.cmake)
+endif()
+if(USE_XBYAK)
+    include(${NBDNN_CMAKE}/external/xbyak.cmake)
+endif()
+if(USE_MKLDNN)
+    include(${NBDNN_CMAKE}/external/mkldnn.cmake)
+endif()
 
 # ----------------------------------------------------------------------------
 # section: noobsdnn compiler and linker options
 # ----------------------------------------------------------------------------
 
-if(ENABLE_DEBUG)
-    set(CMAKE_BUILD_TYPE Debug FORCE)
-else()
-    set(CMAKE_BUILD_TYPE Release FORCE)
-endif()
-
-if(USE_LOGGER)
-    noobsdnn_option(ENABLE_STACKTRACES "If enable local logger with stacktrace." YES)
-    noobsdnn_option(SUPPORT_PTHREADS "If enable local logger with supporting pthreads. " YES)
-endif()
+include(${NBDNN_CMAKE}/compiler.cmake)
 
 # ----------------------------------------------------------------------------
-# section:configure a header file to pass some of the CMake settings to the source
-#         code
+# section: add dir to header files search path
 # ----------------------------------------------------------------------------
-
-configure_file (
-        "${PROJECT_SOURCE_DIR}/cmake/config/noobsdnn_config.h"
-        "${PROJECT_BINARY_DIR}/noobsdnn_config.h"
-)
 
 # add the binary tree to the search path so that noobsdnn will find noobsdnn_config.h
+configure_file ("${PROJECT_SOURCE_DIR}/cmake/config/noobsdnn.config"
+                "${PROJECT_BINARY_DIR}/noobsdnn_config.h")
+
 include_directories(${NBDNN_ROOT})
+include_directories(${NBDNN_INCLUDE})
 include_directories(${PROJECT_BINARY_DIR})
 
 # ----------------------------------------------------------------------------
-# section: find modules and configure
+# section: add dir to source files search path
 # ----------------------------------------------------------------------------
-set(NBDNN_ICESWORD_DEPENDENCIES) # set icesword dependent third-party lib targets
-
-# check and set base compile options
-include(cmake/compiler_options.cmake)
-include(cmake/find_modules.cmake)
-
-if(USE_X86_PLACE)
-    set(NBDNN_TEMP_THIRD_PARTY_PATH ${NBDNN_ROOT}/third-party)
-    if(USE_MKLML)
-        include(cmake/external/mklml.cmake)
-    endif()
-    if(USE_XBYAK)
-        include(cmake/external/xbyak.cmake)
-    endif()
-    if(USE_MKLDNN)
-        include(cmake/external/mkldnn.cmake)
-    endif()
-endif()
-
-# gather all the config options to noobsdnn
-include(cmake/link.cmake)
-
-
-# ----------------------------------------------------------------------------
-# section: build and install noobsdnn
-# ----------------------------------------------------------------------------
-# add source sub_directory whick holds the cmake build module
 
 add_subdirectory(${NBDNN_ICESWORD})
-add_subdirectory(${NBDNN_BENCHMARK})
 
 if(BUILD_WITH_UNIT_TEST)
     add_subdirectory(${NBDNN_UNIT_TEST})
 endif()
 
-noobsdnn_configure_status()
+if(BUILD_BENCHMARK)
+    add_subdirectory(${NBDNN_BENCHMARK})
+endif()
 
-#set(executable_output_path ${PROJECT_BINARY_DIR}/unit_test)
+# ----------------------------------------------------------------------------
+# section: show status
+# ----------------------------------------------------------------------------
 
+include(cmake/status.cmake)
+
+# ----------------------------------------------------------------------------
+# section: set make doc flag
+# ----------------------------------------------------------------------------
+include(cmake/doc.cmake)

@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN, Anakin Authors, All Rights Reserved.
+/* Copyright (c) 2018 NoobsDNN, Anakin Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,21 +16,21 @@
 #ifndef NBDNN_ICESWORD_CORE_EVENTS_H
 #define NBDNN_ICESWORD_CORE_EVENTS_H
 
-#include "target_wrapper.h"
+#include "icesword/core/target_wrapper.h"
 
 namespace noobsdnn{
 
 namespace icesword{
 
-template <typename TargetType>
+template <TargetType TType>
 class Events{
 public:
-    typedef TargetWrapper<TargetType> API;
+    typedef TargetWrapper<TType> API;
     /**
      * \brief create target specific event
      */
     explicit Events(){
-        API::create_event(_event);
+        API::create_event(&_event);
     }
 
     /**
@@ -75,10 +75,10 @@ public:
 };
 
 
-template <typename TargetType>
+template <TargetType TType>
 class EventsTree{
 public:
-    typedef TargetWrapper<TargetType> API;
+    typedef TargetWrapper<TType> API;
     EventsTree() : _events(){}
     ~EventsTree(){}
 
@@ -99,7 +99,7 @@ public:
     }
 
 public:
-    Events<TargetType> _events;
+    Events<TType> _events;
     EventsTree* _parent;
     std::vector<EventsTree*> _children;
 };

@@ -17,11 +17,11 @@
 include(ExternalProject)
 
 set(MKLDNN_PROJECT        "extern_mkldnn")
-set(MKLDNN_SOURCES_DIR    ${NBDNN_TEMP_THIRD_PARTY_PATH}/mkldnn)
+set(MKLDNN_SOURCES_DIR    ${NBDNN_THIRD_PARTY_PATH}/mkldnn)
 set(MKLDNN_INSTALL_DIR    ${NBDNN_THIRD_PARTY_PATH}/mkldnn)
 set(MKLDNN_INC_DIR        "${MKLDNN_INSTALL_DIR}/include" CACHE PATH "mkldnn include directory." FORCE)
-set(MKLDNN_LIB "${MKLDNN_INSTALL_DIR}/lib/libmkldnn.so" CACHE FILEPATH "mkldnn library." FORCE)
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH}" "${MKLDNN_INSTALL_DIR}/lib")
+set(MKLDNN_LIB            "${MKLDNN_INSTALL_DIR}/lib/libmkldnn.so" CACHE FILEPATH "mkldnn library." FORCE)
+set(CMAKE_INSTALL_RPATH   "${CMAKE_INSTALL_RPATH}" "${MKLDNN_INSTALL_DIR}/lib")
 
 include_directories(${MKLDNN_INC_DIR})
 

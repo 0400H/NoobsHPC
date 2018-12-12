@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 Anakin Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 
 /**
  * \brief declare the Test Function
- */
+**/
 /*#define TEST(test_class, test_function)	\
 	class test_class##_##test_function:public test_class{\
 	public:\

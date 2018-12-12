@@ -1,11 +1,14 @@
 #!/bin/bash
 set -e
 
-rm -rf noobsdnn_config.h
-mkdir -p ./build && cd ./build
+mkdir -p build && cd build
 
 cmake ..
-make -j `nproc`
+
+core_num=`cat /proc/cpuinfo| grep "processor"| wc -l`
+
+make -j $[$core_num-1]
+# make doc -j $[$core_num-1]
 
 if [ $? -eq 0 ]; then
     echo "build success"
@@ -14,5 +17,4 @@ else
     exit -1
 fi
 
-# ctest ./test --output-on-failure
 cd -

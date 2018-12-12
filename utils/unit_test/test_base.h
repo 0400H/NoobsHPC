@@ -38,12 +38,12 @@ public:
 protected:
     /**
      * * \brief set test case class global initial.
-     * */
+     ***/
     virtual void setup(){};
 
     /**
     * \brief tear down the test class when test over.
-    */
+   **/
     virtual void teardown(){};
 
 };
@@ -66,7 +66,7 @@ public:
     *  4 = minutes
     *  5 = hours
     *  default milliseconds
-    */
+   **/
     Counter():_precision(2){}
     Counter(int p):_precision(p){}
     inline void start(){

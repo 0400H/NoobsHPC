@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN, Anakin Authors, All Rights Reserved.
+/* Copyright (c) 2018 NoobsDNN, Anakin Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 #ifndef NBDNN_ICESWORD_CORE_TARGET_TRAITS_H
 #define NBDNN_ICESWORD_CORE_TARGET_TRAITS_H
-#include "common.h"
+#include "icesword/core/common.h"
 
 namespace noobsdnn{
 
@@ -24,8 +24,6 @@ namespace icesword{
 struct __host_target{};
 struct __device_target{};
 
-struct __cuda_device{};
-struct __amd_device{};
 struct __x86_device{};
 
 struct __HtoD{};
@@ -34,33 +32,16 @@ struct __DtoD{};
 struct __DtoH{};
 
 
-template <class TargetType>
+template <TargetType>
 struct TargetTypeTraits {
     typedef __invalid_type target_category;
     typedef __invalid_type target_type;
 };
 
 template <>
-struct TargetTypeTraits<NVHX86> {
-    typedef __host_target target_category;
-    typedef __x86_device target_type;
-};
-template <>
-struct TargetTypeTraits<NV> {
-    typedef __device_target target_category;
-    typedef __cuda_device target_type;
-};
-
-template <>
 struct TargetTypeTraits<X86> {
     typedef __host_target target_category;
     typedef __x86_device target_type;
-};
-
-template <>
-struct TargetTypeTraits<AMD> {
-  typedef __device_target target_category;
-  typedef __amd_device target_type;
 };
 
 } //namespace icesword

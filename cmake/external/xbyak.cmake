@@ -17,7 +17,7 @@
 include(ExternalProject)
 
 set(XBYAK_PROJECT       extern_xbyak)
-set(XBYAK_PREFIX_DIR    ${NBDNN_TEMP_THIRD_PARTY_PATH}/xbyak)
+set(XBYAK_PREFIX_DIR    ${NBDNN_THIRD_PARTY_PATH}/xbyak)
 set(XBYAK_CLONE_DIR		${XBYAK_PREFIX_DIR}/src/${XBYAK_PROJECT})
 set(XBYAK_INSTALL_ROOT  ${NBDNN_THIRD_PARTY_PATH}/xbyak)
 set(XBYAK_INC_DIR       ${XBYAK_INSTALL_ROOT}/include)

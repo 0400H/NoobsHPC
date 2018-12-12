@@ -40,15 +40,15 @@ public:
 private:
     /**
     * \brief store the test class  and it's  callback function.
-    */
+   **/
     std::unordered_map<Test*, std::vector<std::function<void(void)> > > _class2func_map;
     /**
     * \brief store the test class  and it's  callback name.
-    */
+   **/
     std::unordered_map<std::string, std::vector<std::string> > _class2funcname_map;
     /**
     * \brief store the test class  and it's  class name.
-    */
+   **/
     std::unordered_map<std::string, Test * > _name2class_map;
 };
 
@@ -83,7 +83,7 @@ public:
     }
 
     //EnginResOp(const EnginResOp&) = delete;
-    // EnginResOp& operator=(const EnginResOp&) = delete;
+    // EnginResOp& layer=(const EnginResOp&) = delete;
 private:
     Test* _test_class;
     std::string _test_class_name;
@@ -97,7 +97,7 @@ public:
 
     /**
     * \brief get singleton instance of test engine.
-    */
+   **/
 
     inline static EngineTest& get_instance() {
         static EngineTest ins;
@@ -106,7 +106,7 @@ public:
 
     /**
     * \brief run all test.
-    */
+   **/
     bool run_all(const char * app_name){
         fprintf(stderr, "%s%s%s[***********]%s %sRunning main() for %s%s.\n",
                 reset(),
@@ -166,7 +166,7 @@ public:
     }
 
     EngineTest(const EngineTest&) = delete;  // disable copy construct
-    EngineTest& operator=(const EngineTest&) = delete; // disable copy operator
+    EngineTest& operator=(const EngineTest&) = delete; // disable copy layer
 };
 
 
