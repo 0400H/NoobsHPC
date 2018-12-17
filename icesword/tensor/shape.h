@@ -18,36 +18,29 @@
 
 #include <vector>
 
-#include "icesword/types.h"
+#include "icesword/tensor/layout.h"
 #include "utils/logger/logger.h"
 
 namespace noobsdnn{
 namespace icesword{
 
-
 class Shape : public std::vector<int> {
 public:
     using vector = std::vector<int>;
 
-    Shape() : vector(), _layout(nullptr) {}
-
-    Shape(vector data, LayoutType LT_type = LT_NCHW) {
-        create_layout(LT_type);
-        CHECK_EQ(_layout->dims(), data.size());
-        for (int i = 0; i < _layout->dims(); ++i) {
-            this->push_back(data[i]);
-        }
-        if (_layout->inner_c() != -1) {
-            CHECK_EQ(data[4], _layout->inner_c()) \
-                << " Layout must be an integer multiple of "
-                << _layout->inner_c();
-        }
-    }
     ~Shape() {
         delete _layout;
         _layout = nullptr;
     }
 
+    Shape() : vector(), _layout(nullptr) {}
+    Shape(vector data, LayoutType LT_TYPE = LT_NCHW) {
+        create_layout(LT_TYPE);
+        CHECK_EQ(_layout->dims(), data.size());
+        for (int i = 0; i < _layout->dims(); ++i) {
+            this->push_back(data[i]);
+        }
+    }
     Shape(const Shape& right)
         : std::vector<int>(right) {
         this->clear();
@@ -68,7 +61,6 @@ public:
         return *this;
     }
     Shape operator+(const Shape& shape) {
-
         Shape tmp_shape(*this);
         int* p = data();
         for (size_t i = 0; i < size(); i++) {
@@ -76,9 +68,7 @@ public:
         }
         return tmp_shape;
     }
-
     Shape operator-(const Shape& shape) {
-
         Shape tmp_shape(*this);
         int* p = data();
         for (size_t i = 0; i < size(); i++) {
@@ -86,23 +76,18 @@ public:
         }
         return tmp_shape;
     }
-
     bool operator<(const Shape& shape) const {
-
         bool flag = size() == shape.size();
         if (!flag) {
             return false;
         }
-
         const int* p = data();
         for (size_t i = 0; i < size(); i++) {
             flag = flag && (p[i] < shape[i]);
         }
         return flag;
     }
-
     bool operator<=(const Shape& shape) const{
-
         bool flag = size() == shape.size();
         if (!flag) {
             return false;
@@ -113,23 +98,18 @@ public:
         }
         return flag;
     }
-
     bool operator>(const Shape& shape) const {
-
         bool flag = size() == shape.size();
         if (!flag) {
             return false;
         }
-
         const int* p = data();
         for (size_t i = 0; i > size(); i++) {
             flag = flag && (p[i] > shape[i]);
         }
         return flag;
     }
-
     bool operator>=(const Shape& shape) const{
-
         bool flag = size() == shape.size();
         if (!flag) {
             return false;
@@ -140,9 +120,7 @@ public:
         }
         return flag;
     }
-
     bool operator==(const Shape& shape) const{
-
         bool flag = size() == shape.size();
         if (!flag) {
             return false;
@@ -153,9 +131,17 @@ public:
         }
         return flag;
     }
-    int num_index() const {
+
+    int group_index() const {
         if (_layout) {
-            return _layout->num_index();
+            return _layout->group_index();
+        } else {
+            return -1;
+        }
+    }
+    int batch_index() const {
+        if (_layout) {
+            return _layout->batch_index();
         } else {
             return -1;
         }
@@ -188,15 +174,20 @@ public:
             return -1;
         }
     }
-    int num() const {
-        int shape_num = this->num_index() == -1 ? 1 : this->data()[this->num_index()];
-        return shape_num;
+
+    int dims() const {
+        return this->size();
+    }
+    int group() const {
+        int shape_batch = this->group_index() == -1 ? 1 : this->data()[this->group_index()];
+        return shape_batch;
+    }
+    int batch() const {
+        int shape_batch = this->batch_index() == -1 ? 1 : this->data()[this->batch_index()];
+        return shape_batch;
     }
     int channel() const {
         int shape_channel = this->channel_index() == -1 ? 1 : this->data()[this->channel_index()];
-        if (_layout->inner_c() != -1) {
-            shape_channel *= _layout->inner_c();
-        }
         return shape_channel;
     }
     int height() const {
@@ -211,6 +202,7 @@ public:
         int shape_depth = this->depth_index() == -1 ? 1 : this->data()[this->depth_index()];
         return shape_depth;
     }
+
     long long count(int start = 0) const {
         if (start > dims()) {
             start = dims();
@@ -238,6 +230,7 @@ public:
         }
         return sum;
     }
+
     Shape get_stride() const {
         Shape data_stride = Shape::zero(*this);
         for (int i = 0; i < dims(); ++i) {
@@ -245,46 +238,31 @@ public:
         }
         return data_stride;
     }
-    int dims() const {
-        return this->size();
-    }
 
-    bool is_continue(const Shape real_shape) const {
-        if (real_shape.size() != this->size()){
-            return false;
-        }
-
-        const int* p = data();
-        for (int i = this->size() - 1; i >= 0; i--) {
-            if (p[i] != real_shape[i]) {
-                int size = this->count() / this->count(i);
-                return size == 1;
-            }
-        }
-        return true;
-    }
     LayoutType get_layout() const {
         if (_layout) {
-            return _layout->type();
+            return _layout->get_layouttype();
         } else {
             return LT_invalid;
         }
     }
-    void set_num (const int num) {
-        CHECK_GT(num, 0);
-        if (_layout->num_index() != -1) {
-            this->data()[_layout->num_index()] = num;
+
+    void set_group (const int group) {
+        CHECK_GT(group, 0);
+        if (_layout->group_index() != -1) {
+            this->data()[_layout->group_index()] = group;
+        }
+    }
+    void set_batch (const int batch) {
+        CHECK_GT(batch, 0);
+        if (_layout->batch_index() != -1) {
+            this->data()[_layout->batch_index()] = batch;
         }
     }
     void set_channel (const int channel) {
         CHECK_GT(channel, 0);
         if (_layout->channel_index() != -1) {
-            int shape_channel = channel;
-            if (_layout->inner_c() != -1) {
-                CHECK_EQ(channel % _layout->inner_c(), 0);
-                shape_channel /= _layout->inner_c();
-            }
-            this->data()[_layout->channel_index()] = shape_channel;
+            this->data()[_layout->channel_index()] = channel;
         }
     }
     void set_height (const int height) {
@@ -305,11 +283,11 @@ public:
             this->data()[_layout->depth_index()] = depth;
         }
     }
-    void set_layout(LayoutType LT_type, std::vector<int> new_shape = {}) {
+    void set_layout(LayoutType LT_TYPE, std::vector<int> new_shape = {}) {
         Shape sh = *this;
         Layout* layout = this->_layout;
-        create_layout(LT_type);
-        if (sh._layout== nullptr) {
+        create_layout(LT_TYPE);
+        if (sh._layout == nullptr) {
             return;
         }
         this->clear();
@@ -321,16 +299,14 @@ public:
             return;
         }
         this->resize(_layout->dims());
-        if (_layout->num_index() != -1) {
-            this->data()[_layout->num_index()] = sh.num();
+        if (_layout->group_index() != -1) {
+            this->data()[_layout->group_index()] = sh.group();
+        }
+        if (_layout->batch_index() != -1) {
+            this->data()[_layout->batch_index()] = sh.batch();
         }
         if (_layout->channel_index() != -1) {
             this->data()[_layout->channel_index()] = sh.channel();
-            if (_layout->inner_c() != -1) {
-                CHECK_EQ(sh.channel() % _layout->inner_c(), 0);
-                this->data()[_layout->channel_index()] /= _layout->inner_c();
-                this->data()[4] = _layout->inner_c();
-            }
         }
         if (_layout->height_index() != -1) {
             this->data()[_layout->height_index()] = sh.height();
@@ -362,23 +338,29 @@ public:
 protected:
     Layout* _layout{nullptr};
 private:
-    void create_layout(LayoutType LT_type) {
-        switch(LT_type) {
+    void create_layout(LayoutType LT_TYPE) {
+        switch(LT_TYPE) {
             case LT_invalid: this->_layout = nullptr; break;
-            case LT_W: this->_layout = new W(); break;
+            case LT_C: this->_layout = new C(); break;
+            case LT_NC: this->_layout = new NC(); break;
+            case LT_NGC: this->_layout = new NGC(); break;
             case LT_HW: this->_layout = new HW(); break;
             case LT_WH: this->_layout = new WH(); break;
-            case LT_NW: this->_layout = new NW(); break;
             case LT_NHW: this->_layout = new NHW(); break;
+            case LT_NWH: this->_layout = new NWH(); break;
             case LT_NCHW: this->_layout = new NCHW(); break;
             case LT_NHWC: this->_layout = new NHWC(); break;
-            case LT_NCHW_C4: this->_layout = new NCHW_C4(); break;
             case LT_NCHW_C8: this->_layout = new NCHW_C8(); break;
             case LT_NCHW_C16: this->_layout = new NCHW_C16(); break;
+            case LT_NGCHW: this->_layout = new NGCHW(); break;
+            case LT_NGHWC: this->_layout = new NGHWC(); break;
+            case LT_NHWGC: this->_layout = new NHWGC(); break;
+            case LT_GNHWC: this->_layout = new GNHWC(); break;
+            case LT_GNCHW: this->_layout = new GNCHW(); break;
+            default : LOG(FATAL) << "don't support layout";
         }
     }
 };
-
 
 } // namespace icesword
 } // namespace noobsdnn

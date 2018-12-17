@@ -47,25 +47,25 @@ public:
         }
     }
 
-    virtual Status init(const std::vector<Tensor<X86> *> &inputs,
-                        std::vector<Tensor<X86> *> &outputs,
-                        Param<X86, FC> &param) override;
+    Status init(const std::vector<Tensor<X86> *> &inputs,
+                std::vector<Tensor<X86> *> &outputs,
+                Param<X86, FC> &param) override;
 
-    virtual Status create(const std::vector<Tensor<X86> *> &inputs,
-                          std::vector<Tensor<X86> *> &outputs,
-                          Param<X86, FC> &param) override;
+    Status create(const std::vector<Tensor<X86> *> &inputs,
+                  std::vector<Tensor<X86> *> &outputs,
+                  Param<X86, FC> &param) override;
 
-    virtual Status run(const std::vector<Tensor<X86> *> &inputs,
-                       std::vector<Tensor<X86> *> &outputs,
-                       Param<X86, FC> &param) override;
+    Status run(const std::vector<Tensor<X86> *> &inputs,
+               std::vector<Tensor<X86> *> &outputs,
+               Param<X86, FC> &param) override;
 
-    virtual Status forward(const std::vector<Tensor<X86> *> &inputs,
-                           std::vector<Tensor<X86> *> &outputs,
-                           Param<X86, FC> &param);
+    Status forward(const std::vector<Tensor<X86> *> &inputs,
+                   std::vector<Tensor<X86> *> &outputs,
+                   Param<X86, FC> &param) override;
 
-    // virtual Status backward(const std::vector<Tensor<X86> *> &inputs,
-    //                        std::vector<Tensor<X86> *> &outputs,
-    //                        Param<X86, FC> &param) override;
+    Status backward(const std::vector<Tensor<X86> *> &inputs,
+                    std::vector<Tensor<X86> *> &outputs,
+                    Param<X86, FC> &param) override;
 
 private:
     int batch_size;

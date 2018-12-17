@@ -74,10 +74,6 @@ public:
         _dtype = type;
         _type_len = type_length(type);
         if (_buf->get_count() < _shape.count() * _type_len) {
-            if (_is_shared || _is_subbuf) {
-                LOG(FATAL) << "tensor is shared, memory can not be re-alloced";
-                return S_OutOfAuthority;
-            }
             _buf->re_alloc(_shape.count() * _type_len);
         }
         return S_Success;
@@ -201,12 +197,12 @@ public:
         return S_Success;
     }
 
-    bool is_continue_mem() const {
-        if (!_is_subbuf) {
-            return true;
-        }
-        return _valid_shape.is_continue(_shape);
-    }
+    // bool is_continue_mem() const {
+    //     if (!_is_subbuf) {
+    //         return true;
+    //     }
+    //     return _valid_shape.is_continue(_shape);
+    // }
 
     /**
      *  \brief Return shape count, from start index to end index(end index is excluded).
@@ -290,18 +286,18 @@ public:
     /**
      *  \brief Return number
     **/
-    int num() const { return _valid_shape.num(); }
+    int batch() const { return _valid_shape.batch(); }
 
     /**
      *  \brief Return number index in shape.
     **/
-    int num_index() const { return _valid_shape.num_index(); }
+    int batch_index() const { return _valid_shape.batch_index(); }
 
     /**
      *  \brief set number to valid shape.
     **/
-    void set_num(int num) {
-        _valid_shape.set_num(num);
+    void set_batch(int num) {
+        _valid_shape.set_batch(num);
         if (_shape.count() < _valid_shape.count()) {
             _shape = _valid_shape;
         }
@@ -408,144 +404,16 @@ public:
         /// get the proper process target wrapper
         typedef typename DataTraitBase<TType_t>::PtrDtype BaseDtype_src;
 
-        /// both tensors are continuous, copy entire buffer
-        if (is_continue_mem() && tensor.is_continue_mem()) {
-            int dst_data_offset = data_offset();
-            int src_data_offset = tensor.data_offset();
-
-            BaseDtype ptr_dst = _buf->get_data_mutable();
-            const BaseDtype_src ptr_src = tensor.data();
-
-            memcpy((char*)ptr_dst + _type_len * dst_data_offset,
-                   (char*)ptr_src + _type_len * src_data_offset,
-                   _type_len * valid_size());
-
-            return S_Success;
-        }
-
-        Shape sh_dst = _shape;
-        Shape val_sh_dst = _valid_shape;
-        Shape sh_src = tensor.shape();
-        Shape val_sh_src = tensor.valid_shape();
-        //Shape off_dst = _offset;
-        //Shape off_src = tensor.offset();
-
-        if (is_continue_mem()) {
-            sh_dst = _valid_shape;
-        }
-        if (tensor.is_continue_mem()) {
-            sh_src = val_sh_src;
-        }
-
-        int dim_dst = dims();
-        int dim_src = tensor.dims();
-
-        /// check the beginning axis of dis_continue memory
-        int axis_discontinue_dst = -1;
-        int axis_discontinue_src = -1;
-        for (int i = dim_dst - 1; i >= 0; i--) {
-            if (val_sh_dst[i] == sh_dst[i]) {
-                continue;
-            } else {
-                axis_discontinue_dst = i;
-                break;
-            }
-        }
-        for (int i = dim_src - 1; i >= 0; i--) {
-            if (val_sh_src[i] == sh_src[i]) {
-                continue;
-            } else {
-                axis_discontinue_src = i;
-                break;
-            }
-        }
-        //printf("dst axis=%d, src axis=%d\n", axis_discontinue_dst, axis_discontinue_src);
-
-        /// only copy the region of interest
-        /// compute the copy length of each memcpy
-        int cpy_len_dst = 1;
-        int cpy_len_src = 1;
-        if (axis_discontinue_dst < 0){
-            cpy_len_dst = valid_size();
-        } else{
-            for (int i = axis_discontinue_dst; i < dim_dst; i++) {
-                cpy_len_dst *= val_sh_dst[i];
-            }
-        }
-        if (axis_discontinue_src < 0){
-            cpy_len_src = tensor.valid_size();
-        } else{
-            for (int i = axis_discontinue_src; i < dim_src; i++) {
-                cpy_len_src *= val_sh_src[i];
-            }
-        }
-        //printf("cpy_len_dst=%d, %d, cpy_len_src=%d, %d\n", cpy_len_dst, valid_size(), cpy_len_src, tensor.valid_size());
-        int cpy_len = cpy_len_dst < cpy_len_src? cpy_len_dst : cpy_len_src;
-
-        /// compute the total copy times
-        int cpy_num = valid_size() / cpy_len;
-        //printf("cpy_len=%d, cpy_num=%d\n", cpy_len, cpy_num);
-
-        /// compute the stride and start index of dst buffer and src buffer
-        std::vector<int> count_dst(abs(axis_discontinue_dst) + 1);
-        std::vector<int> count_src(abs(axis_discontinue_src) + 1);
-
-        Shape stride_dst = get_stride();
-        Shape stride_src = tensor.get_stride();
-
-        count_dst[abs(axis_discontinue_dst)] = count_src[abs(axis_discontinue_src)] = 1;
-        for (int i = axis_discontinue_dst - 1; i >= 0; i--) {
-            if (i == axis_discontinue_dst - 1){
-                count_dst[i] = 1;
-            } else{
-                count_dst[i] = val_sh_dst[i + 1] * count_dst[i + 1];
-            }
-        }
-        for (int i = axis_discontinue_src - 1; i >= 0; i--) {
-            if (i == axis_discontinue_src - 1){
-                count_src[i] = 1;
-            } else{
-                count_src[i] = val_sh_src[i + 1] * count_src[i + 1];
-            }
-        }
-
-        /// compute the start position of each buffer, memcpy from src to dst
-        int ratio_dst = cpy_len_dst / cpy_len;
-        int ratio_src = cpy_len_src / cpy_len;
-
-
         int dst_data_offset = data_offset();
         int src_data_offset = tensor.data_offset();
 
         BaseDtype ptr_dst = _buf->get_data_mutable();
         const BaseDtype_src ptr_src = tensor.data();
 
-        for (int i = 0; i < cpy_num; ++i) {
-            int idx_dst = (i % ratio_dst) * cpy_len;//off_dst[abs(axis_discontinue_dst)] * \
-                stride_dst[abs(axis_discontinue_dst)] + (i % ratio_dst) * cpy_len;
-            int res_dst = i / ratio_dst;
-            for (int j = 0; j < axis_discontinue_dst; ++j) {
-                int div = res_dst / count_dst[j];
-                idx_dst += (div /*+ off_dst[j]*/) * stride_dst[j];
-                res_dst = res_dst % count_dst[j];
-            }
-            int idx_src = (i % ratio_src) * cpy_len;//off_src[abs(axis_discontinue_src)] * \
-                stride_src[abs(axis_discontinue_src)] + (i % ratio_src) * cpy_len;
-            int res_src = i / ratio_src;
-            for (int j = 0; j < axis_discontinue_src; ++j) {
-                int div = res_src / count_src[j];
-                idx_src += (div /*+ off_src[j]*/) * stride_src[j];
-                res_src = res_src % count_src[j];
-            }
-            //printf("i: %d, idx_src: %d, idx_dst: %d\n", i, idx_src, idx_dst);
+        memcpy((char*)ptr_dst + _type_len * dst_data_offset,
+                (char*)ptr_src + _type_len * src_data_offset,
+                _type_len * valid_size());
 
-            int cpy_dst_offset = dst_data_offset + idx_dst;
-            int cpy_src_offset = src_data_offset + idx_src;
-
-            memcpy((char*)ptr_dst + _type_len * cpy_dst_offset,
-                   (char*)ptr_src + _type_len * cpy_src_offset,
-                   _type_len * cpy_len);
-        }
         return S_Success;
     }
 

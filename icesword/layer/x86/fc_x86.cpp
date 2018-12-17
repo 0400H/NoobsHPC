@@ -53,8 +53,6 @@ template <>
 Status Layer<X86, FC, DT_FLOAT>::init(const std::vector<Tensor<X86> *>& inputs,
                                       std::vector<Tensor<X86> *>& outputs,
                                       Param<X86, FC> &param) {
-    this->_param = &param;
-
     output_channel = outputs[0]->channel();
     batch_size = inputs[0]->count_valid(0, param.axis);
 
@@ -69,8 +67,6 @@ template <>
 Status Layer<X86, FC, DT_INT8>::init(const std::vector<Tensor<X86> *>& inputs,
                                                 std::vector<Tensor<X86> *>& outputs,
                                                 Param<X86, FC> &param) {
-    this->_param = &param;
-
     output_channel = outputs[0]->channel();
     batch_size = inputs[0]->count_valid(0, param.axis);
 
@@ -271,19 +267,29 @@ Status Layer<X86, FC, DT_INT8>::forward(const std::vector<Tensor<X86> *>& inputs
     return S_Success;
 }
 
-// template <>
-// Status Layer<X86, FC, DT_INT8>::backward(const std::vector<Tensor<X86> *> &inputs,
-//                                                   std::vector<Tensor<X86> *> &outputs,
-//                                                   Param<X86, FC> &param) {}
+template <>
+Status Layer<X86, FC, DT_FLOAT>::backward(const std::vector<Tensor<X86> *> &inputs,
+                                          std::vector<Tensor<X86> *> &outputs,
+                                          Param<X86, FC> &param) {
+    return S_UnImplError;
+}
+
+template <>
+Status Layer<X86, FC, DT_INT8>::backward(const std::vector<Tensor<X86> *> &inputs,
+                                         std::vector<Tensor<X86> *> &outputs,
+                                         Param<X86, FC> &param) {
+    return S_UnImplError;
+}
 
 template <>
 Status Layer<X86, FC, DT_FLOAT>::run(const std::vector<Tensor<X86> *>& inputs,
-                                      std::vector<Tensor<X86> *>& outputs,
-                                      Param<X86, FC> &param) {
+                                     std::vector<Tensor<X86> *>& outputs,
+                                     Param<X86, FC> &param) {
     switch (param.algorithm) {
         case FORWARD_FC_GEMM:
-            return forward(inputs, outputs, param);
-            break;
+            return forward(inputs, outputs, param); break;
+        case BACKWARD_FC_GEMM:
+            return backward(inputs, outputs, param); break;
         default :
             return S_UnImplError;
     }
@@ -295,8 +301,9 @@ Status Layer<X86, FC, DT_INT8>::run(const std::vector<Tensor<X86> *>& inputs,
                                     Param<X86, FC> &param) {
     switch (param.algorithm) {
         case FORWARD_FC_GEMM:
-            return forward(inputs, outputs, param);
-            break;
+            return forward(inputs, outputs, param); break;
+        case BACKWARD_FC_GEMM:
+            return backward(inputs, outputs, param); break;
         default :
             return S_UnImplError;
     }

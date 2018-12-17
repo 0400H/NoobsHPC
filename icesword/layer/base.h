@@ -21,7 +21,6 @@
 namespace noobsdnn {
 namespace icesword {
 
-
 template<TargetType TType, typename Param>
 class LayerBase {
 
@@ -30,22 +29,26 @@ public:
     virtual ~LayerBase() {}
 
     virtual Status init(const std::vector<Tensor<TType> *> &inputs,
-                        std::vector<Tensor<TType> *> &outputs, Param &param) {
-        return S_UnImplError;
-    }
+                        std::vector<Tensor<TType> *> &outputs, Param &param) = 0;
 
     virtual Status create(const std::vector<Tensor<TType> *> &inputs,
-                          std::vector<Tensor<TType> *> &outputs, Param &param) {
+                          std::vector<Tensor<TType> *> &outputs, Param &param) = 0;
+
+    virtual Status run(const std::vector<Tensor<TType> *> &inputs,
+                       std::vector<Tensor<TType> *> &outputs, Param &param) = 0;
+
+    virtual Status forward(const std::vector<Tensor<TType> *> &inputs,
+                           std::vector<Tensor<TType> *> &outputs, Param &param) {
         return S_UnImplError;
     }
 
-    virtual Status run(const std::vector<Tensor<TType> *> &inputs,
-                       std::vector<Tensor<TType> *> &outputs, Param &param) {
+    virtual Status backward(const std::vector<Tensor<TType> *> &inputs,
+                            std::vector<Tensor<TType> *> &outputs, Param &param) {
         return S_UnImplError;
     }
 
 protected:
-    Param *_param;
+
 };
 
 

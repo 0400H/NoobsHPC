@@ -21,7 +21,7 @@
 namespace noobsdnn{
 namespace icesword{
 
-template<TargetType TType> 
+template<TargetType TType>
 void* fast_malloc(size_t size, size_t malloc_align = 64) {
     size_t offset = sizeof(void*) + malloc_align - 1;
 
@@ -78,6 +78,7 @@ public:
     /**
      * \brief return mutable data pointer
     **/
+   
     TPtr get_data_mutable() { return _data; }
 
     /**
@@ -112,7 +113,7 @@ public:
     **/
     Status mem_set(int value, size_t size) {
     	if(_count != size) {
-            return S_OutOfAuthority;
+            return S_InvalidValue;
         }
         memset(_data, value, size);
     	return S_Success;

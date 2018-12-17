@@ -36,8 +36,8 @@ template <typename src_dtype,
 void fc_cpu_common(const std::vector<Tensor<TType>* > &src,
                    std::vector<Tensor<TType>* > &dst,
                    Param<TType, FC> &param) {
-    int output_channel = dst[0]->count_valid(1, dst[0]->dims());
-    int batch_size = src[0]->num();
+    int output_channel = dst[0]->channel();
+    int batch_size = src[0]->batch();
 
     Shape OutShape({batch_size, output_channel, 1, 1}, LT_NCHW);
     Tensor<X86> dst_tmp;
