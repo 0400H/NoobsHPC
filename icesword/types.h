@@ -16,6 +16,8 @@
 #ifndef NBDNN_ICESWORD_TYPES_H
 #define NBDNN_ICESWORD_TYPES_H
 
+#pragma once
+
 namespace noobsdnn{
 namespace icesword{
 
@@ -24,144 +26,83 @@ enum TargetType {
     X86 = 1,
 };
 
-enum LayerType {
-    Layer_invalid  = -1,
-    FC = 1,
+enum OperatorType {
+    OP_invalid  = -1,
+    AXPY,
+    ACTIVATION,
+    CONVOLUTION,
+    ELTWISE,
+    INNERPRODUCT,
+    ARGMAX,
+    ARGMEAN,
+    ARGMIN,
+    POOLING,
+    SOFTMAX,
+    LSTM,
+    GRU,
+};
+
+enum ExecuteMethod {
+    ET_invalid = -1,
+    ET_default = 0,
+    ET_forward_jit = 1,
+    ET_forward_gemm = 2,
+    ET_backward_jit = 3,
+    ET_backward_gemm = 4,
 };
 
 enum AlgorithmType {
-    AT_invalid  = -1,
-    FORWARD_FC_GEMM,
-    BACKWARD_FC_GEMM,
+    AT_invalid = -1,
+    AT_default = 0,
+
+    // algorithm
+    AT_max,
+    AT_mean,
+    AT_min,
+    AT_nearest,
+    AT_relu,
+    AT_leakyrelu,
+    AT_sigmoid,
+    AT_tanh,
 };
 
 enum LayoutType {
     LT_invalid      = -1,
-    LT_W            = 1,
-    LT_HW           = 2,
-    LT_WH           = 3,
-    LT_NW           = 4,
-    LT_NHW          = 5,
-    LT_NCHW         = 6,
-    LT_NHWC         = 7,
-    LT_NCHW_C4      = 8,
-    LT_NCHW_C8      = 9,
-    LT_NCHW_C16     = 10,
-    LT_OIHW16I16O   = 11,
-    LT_GOIHW16I16O  = 12,
+    LT_C            = 1,
+    LT_NC           = 2,
+    LT_HW           = 3,
+    LT_NGC          = 4,
+    LT_NCHW         = 5,
+    LT_NHWC         = 6,
+    LT_GOHWI        = 7,
+    LT_GOIHW        = 8,
 };
 
 enum DataType {
-    DT_INVALID      =       -1,
-    DT_HALF         =       0,
-    DT_FLOAT        =       1,
-    DT_DOUBLE       =       2,
-    DT_INT8         =       3,
-    DT_INT16        =       4,
-    DT_INT32        =       5,
-    DT_INT64        =       6,
-    DT_UINT8        =       7,
-    DT_UINT16       =       8,
-    DT_UINT32       =       9,
-    DT_STRING       =       10,
-    DT_BOOL         =       11,
-    DT_SHAPE        =       12,
-    DT_TENSOR       =       13,
+    DT_INVALID      = -1,
+    DT_HALF         = 0,
+    DT_FLOAT        = 1,
+    DT_DOUBLE       = 2,
+    DT_INT8         = 3,
+    DT_INT16        = 4,
+    DT_INT32        = 5,
+    DT_INT64        = 6,
+    DT_UINT8        = 7,
+    DT_UINT16       = 8,
+    DT_UINT32       = 9,
+    DT_STRING       = 10,
+    DT_BOOL         = 11,
+    DT_SHAPE        = 12,
+    DT_TENSOR       = 13,
 };
 
 enum Status{
-    S_Success         = -1,                             /*!< No errors**/
-    S_NotInitialized  = 1,                              /*!< Data not initialized.**/
-    S_InvalidValue    = (1 << 1) + S_NotInitialized,    /*!< Incorrect variable value.**/
-    S_MemAllocFailed  = (1 << 2) + S_InvalidValue,      /*!< Memory allocation error.**/
-    S_UnKownError     = (1 << 3) + S_MemAllocFailed,    /*!< Unknown error.**/
-    S_OutOfAuthority  = (1 << 4) + S_UnKownError,       /*!< Try to modified data not your own*/
-    S_OutOfMem        = (1 << 5) + S_OutOfAuthority,    /*!< OOM error*/
-    S_UnImplError     = (1 << 6) + S_OutOfMem,          /*!< Unimplement error.**/
-};
-
-struct Layout {
-    virtual int num_index() {return -1;}
-    virtual int channel_index() {return -1;}
-    virtual int height_index() {return -1;}
-    virtual int width_index() {return -1;}
-    virtual int depth_index() {return -1;}
-    virtual int inner_c() {return -1;}
-    virtual int dims() {return -1;}
-    virtual LayoutType type() {return LT_invalid;}
-};
-struct W : public Layout {
-    int width_index() {return 0;}
-    int dims() {return 1;}
-    LayoutType type() {return LT_W;}
-};
-struct HW : public Layout {
-    int height_index() {return 0;}
-    int width_index() {return 1;}
-    int dims() {return 2;}
-    LayoutType type() {return LT_HW;}
-};
-struct WH : public Layout {
-    int height_index() {return 1;}
-    int width_index() {return 0;}
-    int dims() {return 2;}
-    LayoutType type() {return LT_WH;}
-};
-struct NW : public Layout {
-    int num_index() {return 0;}
-    int width_index() {return 1;}
-    int dims() {return 2;}
-    LayoutType type() {return LT_NW;}
-};
-struct NHW : public Layout {
-    int num_index() {return 0;}
-    int height_index() {return 1;}
-    int width_index() {return 2;}
-    int dims() {return 3;}
-    LayoutType type() {return LT_NHW;}
-};
-struct NCHW : public Layout {
-    int num_index() {return 0;}
-    int channel_index() {return 1;}
-    int height_index() {return 2;}
-    int width_index() {return 3;}
-    int dims() {return 4;}
-    LayoutType type() {return LT_NCHW;}
-};
-struct NHWC : public Layout {
-    int num_index() {return 0;}
-    int height_index() {return 1;}
-    int width_index() {return 2;}
-    int channel_index() {return 3;}
-    int dims() {return 4;}
-    LayoutType type() {return LT_NHWC;}
-};
-struct NCHW_C4 : public Layout {
-    int num_index() {return 0;}
-    int channel_index() {return 1;}
-    int height_index() {return 2;}
-    int width_index() {return 3;}
-    int inner_c() {return 4;}
-    int dims() {return 5;}
-    LayoutType type() {return LT_NCHW_C4;}
-};
-struct NCHW_C8 : public Layout {
-    int num_index() {return 0;}
-    int channel_index() {return 1;}
-    int height_index() {return 2;}
-    int width_index() {return 3;}
-    int inner_c() {return 8;}
-    int dims() {return 5;}
-    LayoutType type() {return LT_NCHW_C8;}
-};
-struct NCHW_C16 : public Layout {
-    int num_index() {return 0;}
-    int channel_index() {return 1;}
-    int height_index() {return 2;}
-    int width_index() {return 3;}
-    int inner_c() {return 16;}
-    int dims() {return 5;}
-    LayoutType type() {return LT_NCHW_C16;}
+    S_Success         = -1,    // No errors
+    S_UnKownError     = 1,     // Unknown error
+    S_UnImplError     = 2,     // Unimplement error
+    S_NotInitialized  = 3,     // Data not initialized
+    S_InvalidValue    = 4,     // Incorrect variable value
+    S_MemAllocFailed  = 5,     // Memory allocation error
 };
 
 } // namespace icesword

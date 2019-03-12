@@ -18,13 +18,12 @@
 include(ExternalProject)
 
 set(MKLML_PROJECT       "extern_mklml")
-set(MKLML_VER           "mklml_lnx_2019.0.20180710")
-#set(MKLML_URL           "https://github.com/01org/mkl-dnn/releases/download/v0.16/${MKLML_VER}.tgz")
+set(MKLML_VER           "mklml_lnx_2019.0.1.20181227")
+#set(MKLML_URL           "https://github.com/01org/mkl-dnn/releases/download/v0.17.2/${MKLML_VER}.tgz")
 set(MKLML_URL           "http://paddlepaddledeps.cdn.bcebos.com/${MKLML_VER}.tgz")
-set(MKLML_SOURCE_DIR    "${NBDNN_THIRD_PARTY_PATH}/mklml")
-set(MKLML_DOWNLOAD_DIR  "${MKLML_SOURCE_DIR}/src/${MKLML_PROJECT}")
-set(MKLML_DST_DIR       ".")
-set(MKLML_INSTALL_ROOT  ${NBDNN_THIRD_PARTY_PATH}/mklml)
+set(MKLML_SOURCE_DIR    ${NBDNN_THIRD_PARTY_PATH}/mklml)
+set(MKLML_DOWNLOAD_DIR  ${MKLML_SOURCE_DIR}/src/${MKLML_PROJECT})
+set(MKLML_INSTALL_ROOT  ${MKLML_SOURCE_DIR})
 set(MKLML_LIB           ${MKLML_INSTALL_ROOT}/lib/libmklml_intel.so)
 set(MKLML_IOMP_LIB      ${MKLML_INSTALL_ROOT}/lib/libiomp5.so)
 
@@ -33,10 +32,11 @@ message(STATUS "Scanning external modules ${Green}MKLML${ColourReset} ...")
 include_directories(${MKLML_INSTALL_ROOT}/include)
 
 file(WRITE ${MKLML_DOWNLOAD_DIR}/CMakeLists.txt
-  "PROJECT(MKLML)\n"
-  "cmake_minimum_required(VERSION 2.8)\n"
-  "install(DIRECTORY ${MKLML_VER}/include ${MKLML_VER}/lib \n"
-  "        DESTINATION ${MKLML_DST_DIR})\n")
+    "PROJECT(MKLML)\n"
+    "cmake_minimum_required(VERSION ${MIN_CMAKE_V})\n"
+    "install(DIRECTORY ${MKLML_VER}/include ${MKLML_VER}/lib\n"
+    "        DESTINATION ${MKLML_INSTALL_ROOT})\n"
+)
 
 ExternalProject_Add(
     ${MKLML_PROJECT}
@@ -44,7 +44,7 @@ ExternalProject_Add(
     PREFIX                ${MKLML_SOURCE_DIR}
     DOWNLOAD_DIR          ${MKLML_DOWNLOAD_DIR}
     DOWNLOAD_COMMAND      wget --no-check-certificate ${MKLML_URL} -c -O ${MKLML_VER}.tgz
-	&& tar -zxf ${MKLML_VER}.tgz -C ${MKLML_DOWNLOAD_DIR}
+	                      && tar -zxf ${MKLML_VER}.tgz -C ${MKLML_DOWNLOAD_DIR}
     UPDATE_COMMAND        ""
     PATCH_COMMAND	  	  ""
     CMAKE_ARGS            -DCMAKE_INSTALL_PREFIX=${MKLML_INSTALL_ROOT}
@@ -55,14 +55,7 @@ SET_PROPERTY(TARGET mklml PROPERTY IMPORTED_LOCATION ${MKLML_IOMP_LIB})
 add_dependencies(mklml ${MKLML_PROJECT})
 
 list(APPEND NBDNN_ICESWORD_DEPENDENCIES mklml)
-
 list(APPEND NBDNN_LINKER_LIBS ${MKLML_LIB};${MKLML_IOMP_LIB})
-
-set(OPENMP_FLAGS "-fopenmp")
-set(CMAKE_C_CREATE_SHARED_LIBRARY_FORBIDDEN_FLAGS ${OPENMP_FLAGS})
-set(CMAKE_CXX_CREATE_SHARED_LIBRARY_FORBIDDEN_FLAGS ${OPENMP_FLAGS})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OPENMP_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPENMP_FLAGS}")
 
 # iomp5 must be installed
 install(FILES ${MKLML_LIB} ${MKLML_IOMP_LIB} DESTINATION lib)

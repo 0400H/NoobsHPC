@@ -16,6 +16,15 @@
 # section: set the compiler and linker options 
 # ----------------------------------------------------------------------------
 
+# generate cmake compiler comands
+if(ENABLE_EXPORT_COMPILE_COMMANDS)
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+endif()
+
+if(ENABLE_VERBOSE_MSG)
+    set(CMAKE_VERBOSE_MAKEFILE ON)
+endif()
+
 set(NBDNN_EXTRA_CXX_FLAGS "")
 
 # noobsdnn_add_compile_option(-v)
@@ -28,7 +37,7 @@ noobsdnn_add_compile_option(-pthread)
 noobsdnn_add_compile_option(-Werror=return-type)
 noobsdnn_add_compile_option(-Werror=address)
 noobsdnn_add_compile_option(-Werror=sequence-point)
-noobsdnn_add_compile_option(-Wno-unused-variable) # no unused-variable
+noobsdnn_add_compile_option(-Wno-unused-variable)
 noobsdnn_add_compile_option(-Wformat)
 noobsdnn_add_compile_option(-Wmissing-declarations)
 noobsdnn_add_compile_option(-Winit-self)
@@ -54,11 +63,14 @@ else()
     noobsdnn_add_compile_option(-Wno-enum-compare)
 endif()
 
-if(CMAKE_BUILD_TYPE MATCHES Debug)
+if(ENABLE_DEBUG)
+    set(CMAKE_BUILD_TYPE Debug FORCE)
     noobsdnn_add_compile_option(-O0)
     noobsdnn_add_compile_option(-g)
+    noobsdnn_add_compile_option(-pg)
     noobsdnn_add_compile_option(-gdwarf-2) # for old version gcc and gdb. see: http://stackoverflow.com/a/15051109/673852 
 else()
+    set(CMAKE_BUILD_TYPE Release FORCE)
     noobsdnn_add_compile_option(-O3)
     noobsdnn_add_compile_option(-DNDEBUG)
 endif()
@@ -72,26 +84,15 @@ if(USE_X86_PLACE)
     noobsdnn_add_compile_option(-Wall)
     noobsdnn_add_compile_option(-Wno-comment)
     noobsdnn_add_compile_option(-Wno-unused-local-typedefs)
-    if(X86_64) # The -Wno-long-long is required in 64bit systems when including sytem headers.
+
+     # The -Wno-long-long is required in 64bit systems when including sytem headers.
+    if(X86_64)
         noobsdnn_add_compile_option(-Wno-long-long)
     endif()
 endif()
 
-set(CMAKE_CXX_FLAGS  ${NBDNN_EXTRA_CXX_FLAGS})
-
-# generate cmake compiler comands
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_FLAGS ${NBDNN_EXTRA_CXX_FLAGS})
 
 if(DISABLE_ALL_WARNINGS)
     noobsdnn_disable_warnings(CMAKE_CXX_FLAGS)
-endif()
-
-if(ENABLE_VERBOSE_MSG)
-    set(CMAKE_VERBOSE_MAKEFILE ON)
-endif()
-
-if(ENABLE_DEBUG)
-    set(CMAKE_BUILD_TYPE Debug FORCE)
-else()
-    set(CMAKE_BUILD_TYPE Release FORCE)
 endif()

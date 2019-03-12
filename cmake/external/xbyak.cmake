@@ -17,29 +17,22 @@
 include(ExternalProject)
 
 set(XBYAK_PROJECT       extern_xbyak)
-set(XBYAK_PREFIX_DIR    ${NBDNN_THIRD_PARTY_PATH}/xbyak)
-set(XBYAK_CLONE_DIR		${XBYAK_PREFIX_DIR}/src/${XBYAK_PROJECT})
-set(XBYAK_INSTALL_ROOT  ${NBDNN_THIRD_PARTY_PATH}/xbyak)
-set(XBYAK_INC_DIR       ${XBYAK_INSTALL_ROOT}/include)
+set(XBYAK_SOURCE_DIR	${NBDNN_THIRD_PARTY_PATH}/xbyak)
+set(XBYAK_DOWNLOAD_DIR  ${XBYAK_SOURCE_DIR}/src/${XBYAK_PROJECT})
+set(XBYAK_INSTALL_ROOT  ${XBYAK_SOURCE_DIR})
+set(XBYAK_INCLUDE_DIR   ${XBYAK_INSTALL_ROOT}/include/xbyak)
 
 message(STATUS "Scanning external modules ${Green}xbyak${ColourReset} ...")
 
-
-include_directories(${XBYAK_INC_DIR})
-
-file(WRITE ${XBYAK_CLONE_DIR}/CMakeLists.txt
-  "PROJECT(MKLML)\n"
-  "cmake_minimum_required(VERSION 2.8)\n"
-  "install(DIRECTORY ${XBYAK_CLONE_DIR}/include \n"
-  "        DESTINATION ${XBYAK_INSTALL_ROOT})\n")
+include_directories(${XBYAK_INCLUDE_DIR})
 
 ExternalProject_Add(
     ${XBYAK_PROJECT}
     ${EXTERNAL_PROJECT_LOG_ARGS}
+    PREFIX              ${XBYAK_SOURCE_DIR}
     DEPENDS             ""
     GIT_REPOSITORY      "https://github.com/herumi/xbyak.git"
     GIT_TAG             "fe083912c8ac7b7e2b0081cbd6213997bc8b56e6"  # mar 6, 2018
-    PREFIX              ${XBYAK_PREFIX_DIR}/src
     UPDATE_COMMAND      ""
     CMAKE_ARGS          -DCMAKE_INSTALL_PREFIX=${XBYAK_INSTALL_ROOT}
 )

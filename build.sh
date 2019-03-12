@@ -3,6 +3,8 @@ set -e
 
 mkdir -p build && cd build
 
+clear && clear && clear
+
 cmake ..
 
 core_num=`cat /proc/cpuinfo| grep "processor"| wc -l`

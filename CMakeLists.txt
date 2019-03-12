@@ -26,8 +26,8 @@ include(cmake/utils.cmake)
 # global noobsdnn version 0.0.1
 
 set(VERSION_MAJOR "0")
-set(VERSION_MINOR "0")
-set(VERSION_PATCH "1")
+set(VERSION_MINOR "1")
+set(VERSION_PATCH "0")
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # noobsdnn lib name and global directories
@@ -37,16 +37,16 @@ set(noobsdnn_lib_static "noobsdnn_static")
 # set root dir of modules
 set(NBDNN_ROOT ${PROJECT_SOURCE_DIR})
 set(NBDNN_CMAKE ${NBDNN_ROOT}/cmake)
+set(NBDNN_UTILS ${NBDNN_ROOT}/utils)
 set(NBDNN_INCLUDE ${NBDNN_ROOT}/include)
 set(NBDNN_ICESWORD ${NBDNN_ROOT}/icesword)
-set(NBDNN_UTILS ${NBDNN_ROOT}/utils)
-set(NBDNN_UNIT_TEST ${NBDNN_ROOT}/test)
+set(NBDNN_UNIT_TEST ${NBDNN_ROOT}/unit_test)
 set(NBDNN_BENCHMARK ${NBDNN_ROOT}/benchmark)
 set(NBDNN_THIRD_PARTY_PATH ${NBDNN_ROOT}/third-party)
 
 # set build and output dir
 set(NBDNN_BUILD ${NBDNN_ROOT}/build)
-set(LIBRARY_OUTPUT_DIRECTORY ${NBDNN_BUILD})
+set(LIBRARY_OUTPUT_DIRECTORY ${NBDNN_BUILD}/lib)
 set(RUNTIME_OUTPUT_DIRECTORY ${NBDNN_BUILD}/output)
 
 # ----------------------------------------------------------------------------
@@ -54,10 +54,12 @@ set(RUNTIME_OUTPUT_DIRECTORY ${NBDNN_BUILD}/output)
 # ----------------------------------------------------------------------------
 
 # common build options
-noobsdnn_option(ENABLE_DEBUG "Enable DEBUG(default) mode." NO)
+noobsdnn_option(ENABLE_DEBUG "Enable DEBUG(default) mode." YES)
 noobsdnn_option(ENABLE_VERBOSE_MSG "Enable verbose=1 : compile msg during make." NO)
+noobsdnn_option(ENABLE_EXPORT_COMPILE_COMMANDS "Export compile command to json." YES)
 noobsdnn_option(DISABLE_ALL_WARNINGS "Disable all the warning msg during compile." YES)
 noobsdnn_option(ENABLE_NOISY_WARNINGS "Enable noisy warning msg during compile." NO if DISABLE_ALL_WARNINGS)
+
 
 # noobsdnn data precision
 noobsdnn_option(NBDNN_TYPE_FP64 "define the FP64 for data precision." NO)
@@ -74,7 +76,7 @@ noobsdnn_option(USE_X86_PLACE "Select the build mode for X86 place." YES)
 
 # build components
 noobsdnn_option(BUILD_WITH_UNIT_TEST "Build noobsdnn unit_test components." YES)
-noobsdnn_option(BUILD_WITH_BENCHMARK "Build noobsdnn benchmark components." NO)
+noobsdnn_option(BUILD_WITH_BENCHMARK "Build noobsdnn benchmark components." YES)
 
 # build library target
 noobsdnn_option(BUILD_SHARED "Build noobsdnn shared lib." YES)
@@ -113,7 +115,7 @@ include(${NBDNN_CMAKE}/compiler.cmake)
 
 # add the binary tree to the search path so that noobsdnn will find noobsdnn_config.h
 configure_file ("${PROJECT_SOURCE_DIR}/cmake/config/noobsdnn.config"
-                "${PROJECT_BINARY_DIR}/noobsdnn_config.h")
+                "${NBDNN_BUILD}/noobsdnn_config.h")
 
 include_directories(${NBDNN_ROOT})
 include_directories(${NBDNN_INCLUDE})
@@ -129,7 +131,7 @@ if(BUILD_WITH_UNIT_TEST)
     add_subdirectory(${NBDNN_UNIT_TEST})
 endif()
 
-if(BUILD_BENCHMARK)
+if(BUILD_WITH_BENCHMARK)
     add_subdirectory(${NBDNN_BENCHMARK})
 endif()
 

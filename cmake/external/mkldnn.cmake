@@ -17,30 +17,29 @@
 include(ExternalProject)
 
 set(MKLDNN_PROJECT        "extern_mkldnn")
-set(MKLDNN_SOURCES_DIR    ${NBDNN_THIRD_PARTY_PATH}/mkldnn)
-set(MKLDNN_INSTALL_DIR    ${NBDNN_THIRD_PARTY_PATH}/mkldnn)
-set(MKLDNN_INC_DIR        "${MKLDNN_INSTALL_DIR}/include" CACHE PATH "mkldnn include directory." FORCE)
+set(MKLDNN_SOURCE_DIR     ${NBDNN_THIRD_PARTY_PATH}/mkldnn)
+set(MKLDNN_INSTALL_DIR    ${MKLDNN_SOURCE_DIR})
+set(MKLDNN_INCLUDE_DIR    "${MKLDNN_INSTALL_DIR}/include" CACHE PATH "mkldnn include directory." FORCE)
 set(MKLDNN_LIB            "${MKLDNN_INSTALL_DIR}/lib/libmkldnn.so" CACHE FILEPATH "mkldnn library." FORCE)
-set(CMAKE_INSTALL_RPATH   "${CMAKE_INSTALL_RPATH}" "${MKLDNN_INSTALL_DIR}/lib")
 
-include_directories(${MKLDNN_INC_DIR})
+include_directories(${MKLDNN_INCLUDE_DIR})
 
-set(MKLDNN_DEPENDS   ${MKLML_PROJECT})
+set(MKLDNN_DEPENDS ${MKLML_PROJECT})
 
 message(STATUS "Scanning external modules ${Green}MKLDNNN${ColourReset}...")
 
 if(${CMAKE_C_COMPILER_VERSION} VERSION_LESS "5.4")
-  set(MKLDNN_CFLAG)
+    set(MKLDNN_CFLAG)
 else()
-  set(MKLDNN_CFLAG "${CMAKE_C_FLAGS} -Wno-error=strict-overflow \
-  -Wno-unused-but-set-variable -Wno-unused-variable -Wno-format-truncation")
+   set(MKLDNN_CFLAG "${CMAKE_C_FLAGS} -Wno-error=strict-overflow \
+   -Wno-unused-but-set-variable -Wno-unused-variable -Wno-format-truncation")
 endif()
 
 if(${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS "5.4")
   set(MKLDNN_CXXFLAG)
 else()
-  set(MKLDNN_CXXFLAG "${CMAKE_CXX_FLAGS} -Wno-error=strict-overflow \
-  -Wno-unused-but-set-variable -Wno-unused-variable -Wno-format-truncation")
+    set(MKLDNN_CXXFLAG "${CMAKE_CXX_FLAGS} -Wno-error=strict-overflow \
+   -Wno-unused-but-set-variable -Wno-unused-variable -Wno-format-truncation")
 endif()
 
 set(MKLDNN_C_COMPILER ${CMAKE_C_COMPILER})
@@ -50,7 +49,8 @@ ExternalProject_Add(
     ${EXTERNAL_PROJECT_LOG_ARGS}
     DEPENDS             ${MKLDNN_DEPENDS}
     GIT_REPOSITORY      "https://github.com/01org/mkl-dnn.git"
-    PREFIX              ${MKLDNN_SOURCES_DIR}
+    GIT_TAG             "a7c5f53832acabade6e5086e72c960adedb3c38a"
+    PREFIX              ${MKLDNN_SOURCE_DIR}
     UPDATE_COMMAND      ""
     CMAKE_ARGS          -DCMAKE_INSTALL_PREFIX=${MKLDNN_INSTALL_DIR}
     CMAKE_ARGS          -DMKLROOT=${MKLML_INSTALL_ROOT}
@@ -61,12 +61,10 @@ ExternalProject_Add(
     CMAKE_ARGS          -DWITH_TEST=OFF -DWITH_EXAMPLE=OFF
 )
 
+# check and download
 add_library(mkldnn SHARED IMPORTED GLOBAL)
 SET_PROPERTY(TARGET mkldnn PROPERTY IMPORTED_LOCATION ${MKLDNN_LIB})
 add_dependencies(mkldnn ${MKLDNN_PROJECT})
 
 list(APPEND NBDNN_ICESWORD_DEPENDENCIES mkldnn)
-
 list(APPEND NBDNN_LINKER_LIBS ${MKLDNN_LIB})
-
-

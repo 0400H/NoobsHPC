@@ -17,10 +17,15 @@ set(NBDNN_ICESWORD_BASE_SRC "")
 
 # fetch noobsdnn header dir recursively
 noobsdnn_fetch_include_recursively(${NBDNN_ICESWORD})
+noobsdnn_fetch_include_recursively(${NBDNN_ICESWORD}/core/timer)
+noobsdnn_fetch_include_recursively(${NBDNN_ICESWORD}/core/logger)
+noobsdnn_fetch_include_recursively(${NBDNN_ICESWORD}/core/tensor)
+noobsdnn_fetch_include_recursively(${NBDNN_ICESWORD}/core/operator)
+noobsdnn_fetch_include_recursively(${NBDNN_ICESWORD}/core/context)
 
 if(USE_X86_PLACE)
-    noobsdnn_fetch_files_with_suffix(${NBDNN_ICESWORD}/layer/x86 "cpp" NBDNN_ICESWORD_BASE_SRC)
-    noobsdnn_fetch_files_with_suffix(${NBDNN_ICESWORD}/layer/x86/kernel "cpp" NBDNN_ICESWORD_BASE_SRC)
+    noobsdnn_fetch_files_with_suffix(${NBDNN_ICESWORD}/operator/x86 "cpp" NBDNN_ICESWORD_BASE_SRC)
+    noobsdnn_fetch_files_with_suffix(${NBDNN_ICESWORD}/operator/x86/kernel "cpp" NBDNN_ICESWORD_BASE_SRC)
 
     # compile cpp objs
     # add_library(NBDNN_ICESWORD_BASE_OBJS OBJECT ${NBDNN_ICESWORD_BASE_SRC})
