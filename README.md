@@ -8,7 +8,7 @@ Welcome to the NoobsDNN GitHub.
 
 [NoobsDNN](https://github.com/0400H/NoobsDNN) is a C++ DNN training and inference engine which is used to learn DNN, C++ and CMAKE.
 
-Secondary development based on open source framework [tiny-dnn](https://github.com/tiny-dnn/tiny-dnn), [paddle](https://github.com/PaddlePaddle/Paddle), [anakin](https://github.com/PaddlePaddle/NoobsDNN) and [mkldnn](https://github.com/intel/mkl-dnn).
+Secondary development based on open source framework [tiny-dnn](https://github.com/tiny-dnn/tiny-dnn), [darknet](https://github.com/pjreddie/darknet), [mkldnn](https://github.com/intel/mkl-dnn) and [anakin](https://github.com/PaddlePaddle/Anakin).
 
 ## Features
 - Suitable for DiaoBaoXia ( C++ Noobs ) to learn and use
@@ -18,7 +18,7 @@ Secondary development based on open source framework [tiny-dnn](https://github.c
 - ./run_benchmark.sh
 
 ## Documentation
-- You can find wiki [here](https://github.com/0400H/NoobsDNN/issues)
+- You can find wiki [here](https://github.com/0400H/NoobsDNN/wiki)
 - We appreciate your contributions!
 
 ## Ask Questions
