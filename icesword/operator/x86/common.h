@@ -33,7 +33,7 @@ namespace icesword {
 
 static inline int32_t get_block_size(ExecuteMethod em) {
     switch (em) {
-        case ET_invalid: 
+        case ET_invalid:
             return 0;
         case FWD_DEFAULT:
             return 8;

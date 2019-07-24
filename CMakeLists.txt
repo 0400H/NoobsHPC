@@ -80,19 +80,18 @@ noobshpc_option(BUILD_WITH_BENCHMARK "Build noobshpc benchmark components." NO)
 
 # build library target
 noobshpc_option(BUILD_SHARED "Build noobshpc shared lib." YES)
-noobshpc_option(BUILD_STATIC "Build noobshpc static lib." YES if NOT BUILD_SHARED)
-
-# x86 rely on 3rd party libs
-if(USE_X86_PLACE)
-    noobshpc_option(USE_MKLDNN "Use MKLDNN libs." NO)
-    noobshpc_option(USE_MKLML "Use MKLML libs." YES)
-    noobshpc_option(USE_XBYAK "Use XBYAK libs." YES)
-endif()
+noobshpc_option(BUILD_STATIC "Build noobshpc static lib." NO)
 
 # ----------------------------------------------------------------------------
 # section: find modules and configure
 # ----------------------------------------------------------------------------
-
+if(USE_X86_PLACE)
+    noobshpc_option(USE_MKLML "Use MKLML libs." YES)
+    noobshpc_option(USE_XBYAK "Use XBYAK libs." NO)
+endif()
+if(BUILD_WITH_BENCHMARK )
+    noobshpc_option(USE_MKLDNN "Use MKLDNN libs." YES)
+endif()
 if(USE_MKLML)
     include(${NBHPC_CMAKE}/external/mklml.cmake)
 endif()

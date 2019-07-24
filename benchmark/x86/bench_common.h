@@ -125,15 +125,6 @@ template <> struct bench_operator_param<CONV> {
     bench_operator_param<ACT> act_param;
 };
 
-template <> struct bench_operator_param<FC> {
-    size_t M;
-    size_t N;
-    std::vector<size_t> K;
-    bool with_bias;
-    ExecuteMethod algo_type;
-    bench_operator_param<ACT> act_param;
-};
-
 template <> struct benchmark_operator_param<ACT> {
     bench_operator_param<ACT> act_param;
     bench_datatype_param dtype_param;
@@ -141,11 +132,6 @@ template <> struct benchmark_operator_param<ACT> {
 
 template <> struct benchmark_operator_param<CONV> {
     bench_operator_param<CONV> conv_param;
-    bench_datatype_param dtype_param;
-};
-
-template <> struct benchmark_operator_param<FC> {
-    bench_operator_param<FC> ip_param;
     bench_datatype_param dtype_param;
 };
 

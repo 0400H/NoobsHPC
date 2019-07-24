@@ -28,7 +28,7 @@ export MKL_NUM_THREADS=${core_num}
 
 output_dir=./build/output
 
-taskset -c ${core_range} numactl -l ${output_dir}/unit_test/test_axpy
+#taskset -c ${core_range} numactl -l ${output_dir}/unit_test/test_axpy
 #taskset -c ${core_range} numactl -l ${output_dir}/unit_test/test_gemm_mkl
 #taskset -c ${core_range} numactl -l ${output_dir}/unit_test/test_convolution
 
