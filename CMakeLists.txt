@@ -54,7 +54,7 @@ set(RUNTIME_OUTPUT_DIRECTORY ${NBHPC_BUILD}/output)
 # ----------------------------------------------------------------------------
 
 # common build options
-noobshpc_option(ENABLE_DEBUG "Enable DEBUG(default) mode." YES)
+noobshpc_option(ENABLE_DEBUG "Enable DEBUG(default) mode." NO)
 noobshpc_option(ENABLE_VERBOSE_MSG "Enable verbose=1 : compile msg during make." NO)
 noobshpc_option(ENABLE_EXPORT_COMPILE_COMMANDS "Export compile command to json." YES)
 noobshpc_option(DISABLE_ALL_WARNINGS "Disable all the warning msg during compile." YES)

@@ -65,9 +65,9 @@ endif()
 
 if(ENABLE_DEBUG)
     set(CMAKE_BUILD_TYPE Debug FORCE)
-    noobshpc_add_compile_option(-O0)
-    noobshpc_add_compile_option(-g)
-    noobshpc_add_compile_option(-pg)
+    noobshpc_add_compile_option(-O0) # no optmization
+    noobshpc_add_compile_option(-g) # debug
+    noobshpc_add_compile_option(-pg) # gprof
     noobshpc_add_compile_option(-gdwarf-2) # for old version gcc and gdb. see: http://stackoverflow.com/a/15051109/673852 
 else()
     set(CMAKE_BUILD_TYPE Release FORCE)
