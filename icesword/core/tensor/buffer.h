@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@
 
 #include "data_traits.h"
 
-namespace noobsdnn{
+namespace noobshpc{
 namespace icesword{
 
 template<TargetType TType>
-void* fast_malloc(size_t size, size_t malloc_align = 64) {
+void* fast_malloc(size_t size, size_t malloc_align = 32) {
     size_t offset = sizeof(void*) + malloc_align - 1;
 
     char* p = nullptr;
@@ -91,9 +91,9 @@ public:
     /**
      * \brief free old memory, alloc new memory
     **/
-    Status alloc(size_t size) {
+    Status alloc(size_t size, size_t malloc_align=32) {
         release_memory();
-        _data = (void*)fast_malloc<TType>(size);
+        _data = (void*)fast_malloc<TType>(size, malloc_align);
         _count = size;
         return S_Success;
     }
@@ -101,10 +101,10 @@ public:
     /**
      * \brief re-alloc memory, only if hold the data, can be relloc
     **/
-    Status re_alloc(size_t size) {
+    Status re_alloc(size_t size, size_t malloc_align=32) {
         if (size > _count) {
             release_memory();
-            _data = (void*)fast_malloc<TType>(size);
+            _data = (void*)fast_malloc<TType>(size, malloc_align);
         }
         _count = size;
         return S_Success;
@@ -148,7 +148,7 @@ private:
 };
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc
 
 #endif // BUFFER_H
 

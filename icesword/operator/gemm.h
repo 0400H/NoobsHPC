@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,15 +13,15 @@
    limitations under the License.
 */
 
-#ifndef NBDNN_ICESWORD_OPERATOR_GEMM_H
-#define NBDNN_ICESWORD_OPERATOR_GEMM_H
+#ifndef NBHPC_ICESWORD_OPERATOR_GEMM_H
+#define NBHPC_ICESWORD_OPERATOR_GEMM_H
 
 #pragma once
 
 #include "icesword/core/tensor/tensor_op.h"
 #include "icesword/core/tensor/data_traits.h"
 
-namespace noobsdnn {
+namespace noobshpc {
 namespace icesword {
 
 template <TargetType t_dtype, DataType op_dtype>
@@ -52,6 +52,6 @@ template <TargetType t_dtype,
 class GEMM_REF : public GEMMBASE2 <t_dtype, a_dtype, b_dtype, c_dtype> {};
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc
 
-#endif // NBDNN_ICESWORD_OPERATOR_GEMM_H
+#endif // NBHPC_ICESWORD_OPERATOR_GEMM_H

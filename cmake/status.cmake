@@ -1,4 +1,4 @@
-# Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+# Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,13 +13,13 @@
 # limitations under the License.
 
 # ----------------------------------------------------------------------------
-# section: prints the statistic of configuration of noobsdnn.
+# section: prints the statistic of configuration of noobshpc.
 # ----------------------------------------------------------------------------
 
 message(STATUS "")
 message(STATUS "================================ configuration ==================================")
 message(STATUS "  ${Green}General:${ColourReset}")
-message(STATUS "  NoobsDNN version          : ${BoldWhite}${VERSION}${ColourReset}")
+message(STATUS "  NoobsHPC version          : ${BoldWhite}${VERSION}${ColourReset}")
 message(STATUS "  System                    : ${BoldWhite}${CMAKE_SYSTEM_NAME}${ColourReset}")
 message(STATUS "  C compiler                : ${BoldWhite}${CMAKE_C_COMPILER}${ColourReset}")
 message(STATUS "  C flags                   : ${CMAKE_C_FLAGS}")
@@ -32,17 +32,17 @@ message(STATUS "  Disable all warnings      : ${DISABLE_ALL_WARNINGS}")
 message(STATUS "  Build with unit_test      : ${BUILD_WITH_UNIT_TEST}")
 message(STATUS "  Export compile command    : ${ENABLE_EXPORT_COMPILE_COMMANDS}")
 
-if(NBDNN_TYPE_FP64)
-    message(STATUS "  Build noobsdnn fp64       : ${NBDNN_TYPE_FP64}")
+if(NBHPC_TYPE_FP64)
+    message(STATUS "  Build noobshpc fp64       : ${NBHPC_TYPE_FP64}")
 endif()
-if(NBDNN_TYPE_FP32)
-    message(STATUS "  Build noobsdnn fp32       : ${NBDNN_TYPE_FP32}")
+if(NBHPC_TYPE_FP32)
+    message(STATUS "  Build noobshpc fp32       : ${NBHPC_TYPE_FP32}")
 endif()
-if(NBDNN_TYPE_FP16)
-    message(STATUS "  Build noobsdnn fp16       : ${NBDNN_TYPE_FP16}")
+if(NBHPC_TYPE_FP16)
+    message(STATUS "  Build noobshpc fp16       : ${NBHPC_TYPE_FP16}")
 endif()
-if(NBDNN_TYPE_INT8)
-    message(STATUS "  Build noobsdnn int8       : ${NBDNN_TYPE_INT8}")
+if(NBHPC_TYPE_INT8)
+    message(STATUS "  Build noobshpc int8       : ${NBHPC_TYPE_INT8}")
 endif()
 
 if(BUILD_SHARED)
@@ -73,5 +73,5 @@ if(USE_GTEST)
 else()
     message(STATUS "  Use local Unit test       : unit_test")
 endif()
-message(STATUS "  Configuation path         : ${PROJECT_BINARY_DIR}/noobsdnn_config.h")
+message(STATUS "  Configuation path         : ${PROJECT_BINARY_DIR}/noobshpc_config.h")
 message(STATUS "================================ End ==================================")

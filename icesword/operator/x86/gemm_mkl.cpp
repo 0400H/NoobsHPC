@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors All Rights Reserve.
+/* Copyright (c) 2018 NoobsHPC Authors All Rights Reserve.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
    limitations under the License.
 */
 
-#include "cblas_gemm_x86.h"
+#include "gemm_mkl.h"
 
-namespace noobsdnn {
+namespace noobshpc {
 namespace icesword {
 
 template <>
@@ -36,7 +36,7 @@ void* CBLAS_GEMM<X86, DT_FLOAT>::pack(const void* mem_in,
     auto trans = need_trans ? CblasTrans : CblasNoTrans;
 
     auto length = cblas_gemm_s8u8s32_pack_get_size(identifier, m, n, k);
-    mem_out = gmalloc(4 * length, 64);
+    mem_out = gmalloc(4 * length, 512);
     cblas_sgemm_pack(layout,
                      identifier,
                      trans,
@@ -69,7 +69,7 @@ void* CBLAS_GEMM<X86, DT_INT8>::pack(const void* mem_in,
     auto trans = need_trans ? CblasTrans : CblasNoTrans;
 
     auto length = cblas_gemm_s8u8s32_pack_get_size(identifier, m, n, k);
-    mem_out = gmalloc(length, 64);
+    mem_out = gmalloc(length, 512);
     cblas_gemm_s8u8s32_pack(layout,
                             identifier,
                             trans,
@@ -166,7 +166,7 @@ Status CBLAS_GEMM<X86, DT_FLOAT>::execute(const void* mem_a,
         oc_w = N;
         oc_method = oc_mode == 'F' ? 1
                   : oc_mode == 'R' ? 2
-                  : oc_mode == 'C' ? 3 
+                  : oc_mode == 'C' ? 3
                   : 0;
     }
 
@@ -300,4 +300,4 @@ Status CBLAS_GEMM<X86, DT_INT8>::execute(const void* mem_a,
 }
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc

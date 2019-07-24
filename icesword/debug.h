@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
    limitations under the License.
 */
 
-#ifndef NBDNN_ICESWORD_DEBUG_H
-#define NBDNN_ICESWORD_DEBUG_H
+#ifndef NBHPC_ICESWORD_DEBUG_H
+#define NBHPC_ICESWORD_DEBUG_H
 
 #pragma once
 
@@ -23,10 +23,10 @@
 
 #include "icesword/types.h"
 
-namespace noobsdnn{
+namespace noobshpc{
 namespace icesword{
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc
 
-#endif // NBDNN_ICESWORD_DEBUG_H
+#endif // NBHPC_ICESWORD_DEBUG_H

@@ -1,4 +1,4 @@
-/*  Copyright (c) 2018 NoobsDNN Authors All Rights Reserve.
+/*  Copyright (c) 2018 NoobsHPC Authors All Rights Reserve.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -13,22 +13,24 @@
     limitations under the License.
 */
 
-#ifndef NBDNN_ICESWORD_OPERATOR_X86_ACTIVATION_H
-#define NBDNN_ICESWORD_OPERATOR_X86_ACTIVATION_H
+#ifndef NBHPC_ICESWORD_OPERATOR_X86_ACT_H
+#define NBHPC_ICESWORD_OPERATOR_X86_ACT_H
 
-#include "icesword/operator/x86/common_x86.h"
+#include "icesword/operator/x86/common.h"
 
-namespace noobsdnn {
+namespace noobshpc {
 namespace icesword {
 
 // todo: need add param.* as I/O mem to do activation
-#define DEFINE_ACTIVATION_CLASS(EType) \
+#define DEFINE_ACT_CLASS(EType) \
     template <DataType DType> \
-    class Operator<X86, ACTIVATION, EType, DType> \
-        : public OperatorBase<X86, ImplParam<X86, ACTIVATION>> { \
+    class Operator<X86, ACT, EType, DType> \
+        : public ImplBase<X86, ImplParam<X86, ACT>> { \
     public:  \
         typedef typename DataTrait<X86, DType>::Dtype OP_DType; \
+        typedef ImplBase<X86, ImplParam<X86, ACT>> Impl_t; \
         Operator() { \
+            impl = nullptr; \
             block_size = 16; \
             thread_num = ice_get_max_threads(); \
         } \
@@ -36,25 +38,29 @@ namespace icesword {
             release(); \
         } \
         Status release() { \
+            if (impl != nullptr) { \
+                delete impl; \
+                impl = nullptr; \
+            } \
             return S_Success; \
         } \
         Status init(const std::vector<Tensor<X86> *>& inputs, \
-                    std::vector<Tensor<X86> *>& outputs, \
-                    ImplParam<X86, ACTIVATION>& param) { \
-            return S_Success; \
-        }; \
-        Status execute(const std::vector<Tensor<X86> *>& inputs, \
-                       std::vector<Tensor<X86> *>& outputs, \
-                       ImplParam<X86, ACTIVATION>& param) override; \
+                            std::vector<Tensor<X86> *>& outputs, \
+                            ImplParam<X86, ACT>& param) override; \
+        virtual Status execute(const std::vector<Tensor<X86> *>& inputs, \
+                               std::vector<Tensor<X86> *>& outputs, \
+                               ImplParam<X86, ACT>& param) override; \
     private: \
         size_t thread_num; \
         size_t block_size; \
+        Impl_t* impl; \
     };
 
-DEFINE_ACTIVATION_CLASS(ET_forward_gemm)
-DEFINE_ACTIVATION_CLASS(ET_forward_jit)
+// DEFINE_ACT_CLASS(FWD_DEFAULT)
+DEFINE_ACT_CLASS(FWD_AVX2)
+DEFINE_ACT_CLASS(FWD_REF)
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc
 
-#endif // NBDNN_ICESWORD_OPERATOR_X86_ACTIVATION_H
+#endif // NBHPC_ICESWORD_OPERATOR_X86_ACT_H

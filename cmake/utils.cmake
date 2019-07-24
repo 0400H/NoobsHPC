@@ -1,4 +1,4 @@
-# Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+# Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 # fetch files(.cc .cpp .cu .c or .h .hpp etc.) in dir(search_dir) 
 # and save to parent scope var outputs
 
-function(noobsdnn_fetch_files_with_suffix search_dir suffix outputs)
+function(noobshpc_fetch_files_with_suffix search_dir suffix outputs)
     exec_program(ls ${search_dir}
                  ARGS "*.${suffix}"
                  OUTPUT_VARIABLE OUTPUT
@@ -36,13 +36,13 @@ function(noobsdnn_fetch_files_with_suffix search_dir suffix outputs)
 endfunction()
 
 # recursively fetch files
-function(noobsdnn_fetch_files_with_suffix_recursively search_dir suffix outputs)
+function(noobshpc_fetch_files_with_suffix_recursively search_dir suffix outputs)
     file(GLOB_RECURSE ${outputs} ${search_dir} "*.${suffix}")    
     set(${outputs} ${${outputs}} PARENT_SCOPE)
 endfunction()
 
 # recursively fetch include dir 
-function(noobsdnn_fetch_include_recursively root_dir)
+function(noobshpc_fetch_include_recursively root_dir)
     if (IS_DIRECTORY ${root_dir})
         include_directories(${root_dir})
         # message(STATUS "include dir: " ${Magenta}${root_dir}${ColourReset})
@@ -51,17 +51,17 @@ function(noobsdnn_fetch_include_recursively root_dir)
     file(GLOB ALL_SUB RELATIVE ${root_dir} ${root_dir}/*)
     foreach(sub ${ALL_SUB})
         if (IS_DIRECTORY ${root_dir}/${sub})                    
-            noobsdnn_fetch_include_recursively(${root_dir}/${sub})
+            noobshpc_fetch_include_recursively(${root_dir}/${sub})
         endif()
     endforeach()
 endfunction()
 
 # judge fetch files
-function(noobsdnn_judge_avx outputs)
+function(noobshpc_judge_avx outputs)
     exec_program(cat /proc/cpuinfo|greps flag|uniq
             OUTPUT_VARIABLE OUTPUT
             RETURN_VALUE VALUE)
-    message("it is noobsdnn_judge_avx " OUTPUT)
+    message("it is noobshpc_judge_avx " OUTPUT)
     set(${outputs} ${${outputs}} PARENT_SCOPE)
 endfunction()
 
@@ -69,7 +69,7 @@ endfunction()
 # section: help to detect the compiler options
 # ----------------------------------------------------------------------------
 # check and add  compiler options
-macro(noobsdnn_check_compiler_flag LANG FLAG RESULT)
+macro(noobshpc_check_compiler_flag LANG FLAG RESULT)
     if(NOT DEFINED ${RESULT})
         if("_${LANG}_" MATCHES "_CXX_")
             set(_fname "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/src.cxx")
@@ -109,31 +109,31 @@ macro(noobsdnn_check_compiler_flag LANG FLAG RESULT)
     endif()
 endmacro()
 
-macro(noobsdnn_check_flag_support lang flag varname)
+macro(noobshpc_check_flag_support lang flag varname)
     if("_${lang}_" MATCHES "_CXX_")
         set(_lang CXX)
     endif()
     string(TOUPPER "${flag}" ${varname})
     string(REGEX REPLACE "^(/|-)" "HAVE_${_lang}_" ${varname} "${${varname}}")
     string(REGEX REPLACE " --|-|=| |\\." "_" ${varname} "${${varname}}")
-    noobsdnn_check_compiler_flag("${_lang}" "${ARGN} ${flag}" ${${varname}})
+    noobshpc_check_compiler_flag("${_lang}" "${ARGN} ${flag}" ${${varname}})
 endmacro()
 
-macro(noobsdnn_add_compile_option option)
+macro(noobshpc_add_compile_option option)
     if(CMAKE_BUILD_TYPE)
         set(CMAKE_TRY_COMPILE_CONFIGURATION ${CMAKE_BUILD_TYPE})
     endif()
-    noobsdnn_check_flag_support(CXX "${option}" _varname)
+    noobshpc_check_flag_support(CXX "${option}" _varname)
     if(${_varname})
-        set(NBDNN_EXTRA_CXX_FLAGS "${NBDNN_EXTRA_CXX_FLAGS} ${option}")
+        set(NBHPC_EXTRA_CXX_FLAGS "${NBHPC_EXTRA_CXX_FLAGS} ${option}")
     endif()
 endmacro()
 
 # ----------------------------------------------------------------------------
-# section: Provides an noobsdnn config option macro
-# usage：  noobsdnn_option(var "help string to describe the var" [if or IF (condition)])
+# section: Provides an noobshpc config option macro
+# usage：  noobshpc_option(var "help string to describe the var" [if or IF (condition)])
 # ----------------------------------------------------------------------------
-macro(noobsdnn_option variable description value)
+macro(noobshpc_option variable description value)
     set(__value ${value})
     set(__condition "")
     set(__varname "__value")
@@ -173,9 +173,9 @@ macro(noobsdnn_option variable description value)
  endmacro()
 
 # ----------------------------------------------------------------------------
-# section: Provides macro for an noobsdnn warning diasable
+# section: Provides macro for an noobshpc warning diasable
 # ----------------------------------------------------------------------------
-macro(noobsdnn_disable_warnings)
+macro(noobshpc_disable_warnings)
     set(__flag_vars "")
 
     foreach(arg ${ARGN})

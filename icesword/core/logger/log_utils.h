@@ -38,7 +38,7 @@
 #include <signal.h>
 #include <sys/stat.h> // mkdir
 #include <unistd.h>   // STDERR_FILENO
-#include "noobsdnn_config.h"
+#include "noobshpc_config.h"
 
 // Disable all warnings from gcc/clang:
 #if defined(__clang__)

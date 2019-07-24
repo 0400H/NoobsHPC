@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 #include "shape.h"
 #include "buffer.h"
 
-namespace noobsdnn{
+namespace noobshpc{
 namespace icesword{
 
 template<TargetType TType>
@@ -117,14 +117,14 @@ public:
         return S_Success;
     }
 
-    Status re_alloc(Shape shape, DataType type) {
+    Status re_alloc(Shape shape, DataType type, size_t malloc_align = 32) {
         CHECK_EQ(_is_shared || _is_subbuf, false) << "shared tensor could not re_alloc";
         _dtype = type;
         _type_len = type_length(type);
         _shape = shape;
         _valid_shape = _shape;
         _offset =Shape::zero(_shape);
-        _buf->alloc(_shape.count() * _type_len);
+        _buf->alloc(_shape.count() * _type_len, malloc_align);
         return S_Success;
     }
 
@@ -458,6 +458,6 @@ private:
 
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc
 
 #endif // TENSOR_H

@@ -1,4 +1,4 @@
-/*  Copyright (c) 2018 NoobsDNN Authors All Rights Reserve.
+/*  Copyright (c) 2018 NoobsHPC Authors All Rights Reserve.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -13,15 +13,15 @@
     limitations under the License.
 */
 
-#ifndef NBDNN_ICESWORD_OPERATOR_X86_KERNEL_CBLAS_GEMM_H
-#define NBDNN_ICESWORD_OPERATOR_X86_KERNEL_CBLAS_GEMM_H
+#ifndef NBHPC_ICESWORD_OPERATOR_X86_GEMM_H
+#define NBHPC_ICESWORD_OPERATOR_X86_GEMM_H
 
 #include "mkl.h"
 #include "icesword/utils.h"
 #include "icesword/operator/gemm.h"
-#include "icesword/operator/x86/omp_thread_x86.h"
+#include "icesword/operator/x86/omp_thread.h"
 
-namespace noobsdnn {
+namespace noobshpc {
 namespace icesword {
 
 /*
@@ -115,8 +115,8 @@ public:
     Status convert_mem_s82u8(bool exec_it, void* src, size_t length);
 
     void* compute_offset(bool exec_it, bool trans_b, const int8_t ob,
-                           const float alpha, const size_t dim_n,
-                           const size_t dim_k, const void* mem_b);
+                         const float alpha, const size_t dim_n,
+                         const size_t dim_k, const void* mem_b);
 
     Status add_offset2mem_c(const bool exec_it, const char oc_mode,
                             const void* mem_in, void* mem_out,
@@ -276,8 +276,8 @@ Status CBLAS_GEMM<X86, DType>::convert_mem_s82u8(bool exec_it, void* src, size_t
 
 template<DataType DType>
 void* CBLAS_GEMM<X86, DType>::compute_offset(bool exec_it, bool trans_b, const int8_t ob,
-                                               const float alpha, const size_t dim_n,
-                                               const size_t dim_k, const void* mem_b) {
+                                             const float alpha, const size_t dim_n,
+                                             const size_t dim_k, const void* mem_b) {
     if (exec_it) {
         if (mem_b == nullptr) {
             LOG(FATAL) << "wrong empty pointer !";
@@ -306,7 +306,7 @@ void* CBLAS_GEMM<X86, DType>::compute_offset(bool exec_it, bool trans_b, const i
             }
         } else {
             for (auto i = 0; i < dim_k; i++) {
-                #pragma omp parallel for collapse(1)
+                #pragma omp parallel for collapse(1) num_threads(thread_num)
                 for (auto j = 0; j < dim_n; j++) {
                     dst[j] += scale * (b_mem[i * dim_n + j] + ob);
                 }
@@ -352,6 +352,6 @@ Status CBLAS_GEMM<X86, DType>::add_offset2mem_c(const bool exec_it, const char o
 }
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc
 
-#endif // NBDNN_ICESWORD_OPERATOR_X86_KERNEL_CBLAS_GEMM_H
+#endif // NBHPC_ICESWORD_OPERATOR_X86_GEMM_H

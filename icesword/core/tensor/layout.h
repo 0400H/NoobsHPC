@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 #include "icesword/types.h"
 
-namespace noobsdnn{
+namespace noobshpc{
 namespace icesword{
 
 struct Layout {
@@ -96,6 +96,6 @@ struct GOIHW : public Layout {
 };
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc
 
 #endif // LAYOUT_H

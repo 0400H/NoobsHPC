@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,12 +13,12 @@
    limitations under the License.
 */
 
-#ifndef NBDNN_ICESWORD_TYPES_H
-#define NBDNN_ICESWORD_TYPES_H
+#ifndef NBHPC_ICESWORD_TYPES_H
+#define NBHPC_ICESWORD_TYPES_H
 
 #pragma once
 
-namespace noobsdnn{
+namespace noobshpc{
 namespace icesword{
 
 enum TargetType {
@@ -28,42 +28,18 @@ enum TargetType {
 
 enum OperatorType {
     OP_invalid  = -1,
+    ACT,
     AXPY,
-    ACTIVATION,
-    CONVOLUTION,
-    ELTWISE,
-    INNERPRODUCT,
-    ARGMAX,
-    ARGMEAN,
-    ARGMIN,
-    POOLING,
-    SOFTMAX,
-    LSTM,
-    GRU,
+    CONV,
 };
 
 enum ExecuteMethod {
     ET_invalid = -1,
-    ET_default = 0,
-    ET_forward_jit = 1,
-    ET_forward_gemm = 2,
-    ET_backward_jit = 3,
-    ET_backward_gemm = 4,
-};
-
-enum AlgorithmType {
-    AT_invalid = -1,
-    AT_default = 0,
-
-    // algorithm
-    AT_max,
-    AT_mean,
-    AT_min,
-    AT_nearest,
-    AT_relu,
-    AT_leakyrelu,
-    AT_sigmoid,
-    AT_tanh,
+    FWD_DEFAULT = 0,
+    FWD_REF = 1,
+    FWD_GEMM = 2,
+    FWD_SSE = 3,
+    FWD_AVX2 = 4,
 };
 
 enum LayoutType {
@@ -106,6 +82,6 @@ enum Status{
 };
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc
 
-#endif // NBDNN_ICESWORD_TYPES_H
+#endif // NBHPC_ICESWORD_TYPES_H

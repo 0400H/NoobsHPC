@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 ipparam.NoobsDNN Authors All Rights Reserve.
+/* Copyright (c) 2018 ipparam.NoobsHPC Authors All Rights Reserve.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
    limitations under the License.
 */
 
-#include "bench_common_x86.h"
+#include "bench_common.h"
 
 // #define ICESWORD_VERBOSE
 #define LOOP_WARMUP 20
@@ -56,7 +56,7 @@ Status benchmark_gemm_cpu(bench_cblas_gemm_param& param,
 
     if (verbose) {
         auto io_dtype = get_io_dtype_string(dtparam.input_dtype, dtparam.output_dtype);
-        LOG(INFO)<< "Cblas gemm x86 {"
+        LOG(INFO)<< "Gemm x86 {"
                 << " io_dtype: " << io_dtype
                 << " offset_mode:" << offset_mode
                 << " trans_a: " << (trans_a ? "true" : "false")
@@ -97,7 +97,7 @@ Status benchmark_gemm_cpu(bench_cblas_gemm_param& param,
                      M, N, K, 0, 0, offset_mode, true, trans_a, trans_b, false, false, beta, alpha);
         timer.stop();
     }
-    benchmark_timer(timer, "cblas gemm x86");
+    benchmark_timer(timer, "Gemm x86");
 
     return S_Success;
 }

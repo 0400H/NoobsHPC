@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -22,15 +22,15 @@
 
 #include "tensor.h"
 
-namespace noobsdnn{
+namespace noobshpc{
 namespace icesword{
 
 /* example:
-    fill_matrix_debug<DT_FLOAT>(inputs[0]->mutable_data(),
+    fill_tensor_debug<DT_FLOAT>(inputs[0]->mutable_data(),
                                 mb * g, ic/g * ih * iw, true, true);
 */
 template <DataType DType>
-Status fill_matrix_debug(void* matrix,
+Status fill_tensor_debug(void* matrix,
                          const size_t height,
                          const size_t width,
                          bool fill_hight_index = false,
@@ -306,6 +306,6 @@ void tensor_cmp(const Dtype* src1, const Dtype* src2, \
 
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc
 
 #endif // TENSOR_OP_H

@@ -1,4 +1,4 @@
-# Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+# Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,21 +14,21 @@
 
 file(REMOVE ${RUNTIME_OUTPUT_DIRECTORY}/unit_test/*)
 
-set(NBDNN_LINKER_LIBS
+set(NBHPC_LINKER_LIBS
     ${MKLDNN_LIB}
     ${MKLML_LIB}
     ${MKLML_IOMP_LIB}
 )
 
-message(STATUS "NoobsDNN linker libs: ${NBDNN_LINKER_LIBS}")
+message(STATUS "NoobsHPC linker libs: ${NBHPC_LINKER_LIBS}")
 
-noobsdnn_fetch_include_recursively(${NBDNN_UNIT_TEST})
+noobshpc_fetch_include_recursively(${NBHPC_UNIT_TEST})
 
 if(USE_X86_PLACE)
-    noobsdnn_fetch_files_with_suffix(${NBDNN_UNIT_TEST} "cpp" NBDNN_TEST_CASE_SRC)
+    noobshpc_fetch_files_with_suffix(${NBHPC_UNIT_TEST} "cpp" NBHPC_TEST_CASE_SRC)
 
     # build test cases
-    foreach(SRC_NAME ${NBDNN_TEST_CASE_SRC})
+    foreach(SRC_NAME ${NBHPC_TEST_CASE_SRC})
         #unpack the dir "/"
         string(REPLACE "/" ";" SEXY_LIST ${SRC_NAME})
         list(GET SEXY_LIST -1 TEST_CASE_NAME)
@@ -37,10 +37,10 @@ if(USE_X86_PLACE)
         list(GET SEXY_LIST 0 TEST_CASE_NAME)
         add_executable(${TEST_CASE_NAME}  ${SRC_NAME})
         if(BUILD_SHARED)
-            target_link_libraries(${TEST_CASE_NAME} ${noobsdnn_lib_so} ${NBDNN_LINKER_LIBS} -ldl -lm)
+            target_link_libraries(${TEST_CASE_NAME} ${noobshpc_lib_so} ${NBHPC_LINKER_LIBS} -ldl -lm)
         else()
             target_link_libraries(${TEST_CASE_NAME} -Wl,--whole-archive
-                                  ${noobsdnn_lib_static} -Wl,--no-whole-archive)
+                                  ${noobshpc_lib_static} -Wl,--no-whole-archive)
         endif()
         set_target_properties(${TEST_CASE_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY 
                               ${RUNTIME_OUTPUT_DIRECTORY}/unit_test)

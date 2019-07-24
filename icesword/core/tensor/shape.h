@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
 #include "layout.h"
 #include "icesword/core/logger/logger.h"
 
-namespace noobsdnn{
+namespace noobshpc{
 namespace icesword{
 
 class Shape : public std::vector<int> {
@@ -357,6 +357,6 @@ private:
 };
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc
 
 #endif // SHAPE_H

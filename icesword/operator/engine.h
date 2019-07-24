@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,44 +13,18 @@
    limitations under the License.
 */
 
-#ifndef NBDNN_ICESWORD_OPERATOR_ENGINE_H
-#define NBDNN_ICESWORD_OPERATOR_ENGINE_H
+#ifndef NBHPC_ICESWORD_OPERATOR_ENGINE_H
+#define NBHPC_ICESWORD_OPERATOR_ENGINE_H
 
 #pragma once
 
-#include <map>
+#include <list>
+#include "gemm.h"
 
-// #include "icesword/types.h"
+#include "x86/axpy.h"
+#include "x86/activation.h"
+#include "x86/convolution.h"
+#include "x86/gemm_mkl.h"
+#include "x86/gemm_mkl_ref.h"
 
-#include "icesword/operator/gemm.h"
-
-#include "icesword/operator/x86/reference_x86.h"
-
-#include "icesword/operator/x86/activation_x86.h"
-#include "icesword/operator/x86/convolution_x86.h"
-#include "icesword/operator/x86/pooling_x86.h"
-#include "icesword/operator/x86/inner_product_x86.h"
-
-#include "icesword/operator/x86/kernel/gemm_ref_x86.h"
-#include "icesword/operator/x86/kernel/cblas_gemm_x86.h"
-
-// namespace noobsdnn{
-// namespace icesword{
-
-/**
- * engine declear macro defination
-**/
-
-    // typedef Status (* funcptr) (const std::vector<Tensor<X86> *>& inputs,
-    //                             std::vector<Tensor<X86> *>& outputs,
-    //                             ImplParam<X86, IP>& param);
-    // std::map<std::string, funcptr> engine = {
-    //     {"inner_product_init_FLOAT_FLOAT", inner_product_init<DT_FLOAT, DT_FLOAT, DT_FLOAT, DT_FLOAT>.init},
-    // };
-
-    // engine["inner_product_init_FLOAT_FLOAT"](input, memory.outputs, impl_param);
-
-// } // namespace icesword
-// } // namespace noobsdnn
-
-#endif // NBDNN_ICESWORD_OPERATOR_ENGINE_H
+#endif // NBHPC_ICESWORD_OPERATOR_ENGINE_H

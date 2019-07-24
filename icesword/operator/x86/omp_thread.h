@@ -1,4 +1,4 @@
-/*  Copyright (c) 2018 NoobsDNN Authors All Rights Reserve.
+/*  Copyright (c) 2018 NoobsHPC Authors All Rights Reserve.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@
 #include "icesword/operator/operator.h"
 #include "icesword/core/tensor/tensor_op.h"
 
-namespace noobsdnn {
+namespace noobshpc {
 namespace icesword {
 
 #ifdef USE_OPENMP
@@ -203,6 +203,6 @@ static inline bool nd_iterator_jump(U& cur, const U end, W& x, const Y& X,
 }
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc
 
 #endif // ICESWORD_OPERATOR_X86_OMP_THREAD_H

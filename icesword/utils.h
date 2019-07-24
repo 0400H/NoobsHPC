@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
    limitations under the License.
 */
 
-#ifndef NBDNN_ICESWORD_UTILS_H
-#define NBDNN_ICESWORD_UTILS_H
+#ifndef NBHPC_ICESWORD_UTILS_H
+#define NBHPC_ICESWORD_UTILS_H
 
 #pragma once
 
@@ -31,7 +31,7 @@
 
 #include "icesword/types.h"
 
-namespace noobsdnn{
+namespace noobshpc{
 namespace icesword{
 
 #define ICESWORD_CHECK(condition) \
@@ -43,6 +43,10 @@ namespace icesword{
 #define SPLICE_ARGS(ARG1, ARG2) ARG1##ARG2
 
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof(*array))
+
+static inline const std::string get_algorithm_string(std::string algo) {
+    return algo;
+}
 
 static inline const std::string get_layout_string(LayoutType layout) {
     switch(layout) {
@@ -81,25 +85,12 @@ static inline const std::string get_io_dtype_string(DataType inDtype, DataType o
         return std::string("u8s8");
     } else if (inDtype == DT_UINT8 && outDtype == DT_UINT8) {
         return std::string("u8u8");
+    } else if (inDtype == DT_INT8 && outDtype == DT_FLOAT) {
+        return std::string("s8f32");
+    } else if (inDtype == DT_INT8 && outDtype == DT_INT32) {
+        return std::string("s8s32");
     }
     return std::string("undefined");
-}
-
-static inline const std::string get_algorithm_string(AlgorithmType algo) {
-    switch(algo) {
-        case AT_nearest :
-            return std::string("nearest");
-        case AT_relu :
-            return std::string("relu");
-        case AT_leakyrelu :
-            return std::string("leakyrelu");
-        case AT_sigmoid :
-            return std::string("sigmoid");
-        case AT_tanh :
-            return std::string("tanh");
-        default:
-            return std::string("undefined");
-    }
 }
 
 static inline const std::string icesword_get_error_string(Status error_code){
@@ -215,6 +206,6 @@ static inline void array_set(T* arr, const U& val, size_t size) {
 }
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc
 
-#endif // NBDNN_ICESWORD_UTILS_H
+#endif // NBHPC_ICESWORD_UTILS_H

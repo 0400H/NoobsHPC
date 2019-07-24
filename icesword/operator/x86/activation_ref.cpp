@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors All Rights Reserve.
+/* Copyright (c) 2018 NoobsHPC Authors All Rights Reserve.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,20 +13,28 @@
    limitations under the License.
 */
 
-#include "activation_x86.h"
+#include "activation.h"
 
-namespace noobsdnn {
+namespace noobshpc {
 namespace icesword {
 
 template <DataType DType>
-Status Operator<X86, ACTIVATION, ET_forward_gemm, DType>::execute(
-                            const std::vector<Tensor<X86> *>& inputs,
-                            std::vector<Tensor<X86> *>& outputs,
-                            ImplParam<X86, ACTIVATION>& param) {
+Status Operator<X86, ACT, FWD_REF, DType>::init(
+                const std::vector<Tensor<X86> *>& inputs,
+                std::vector<Tensor<X86> *>& outputs,
+                ImplParam<X86, ACT>& param) {
+    return S_Success;
+}
+
+template <DataType DType>
+Status Operator<X86, ACT, FWD_REF, DType>::execute(
+                const std::vector<Tensor<X86> *>& inputs,
+                std::vector<Tensor<X86> *>& outputs,
+                ImplParam<X86, ACT>& param) {
     const OP_DType *src = nullptr;
     OP_DType *dst = nullptr;
 
-    if (param.algo_active == AT_relu) {
+    if (param.algo_act == "relu") {
         // relu: x > 0 ? x :0
         for (auto num = 0; num < inputs.size(); ++num) {
             auto length = inputs[num]->valid_size();
@@ -58,7 +66,7 @@ Status Operator<X86, ACTIVATION, ET_forward_gemm, DType>::execute(
             //     dst[i] = src_data > 0 ? src_data : 0;
             // }
         }
-    } else if (param.algo_active == AT_leakyrelu) {
+    } else if (param.algo_act == "leakyrelu") {
         float scale = param.leakyrelu_scale;
 
         // relu: x > 0 ? x : w * x
@@ -76,7 +84,7 @@ Status Operator<X86, ACTIVATION, ET_forward_gemm, DType>::execute(
                 dst[i] = src_data > 0 ? src_data : scale * src_data;
             }
         }
-    } else if (param.algo_active == AT_sigmoid) {
+    } else if (param.algo_act == "sigmoid") {
         // sigmoid: 1/(exp(-x) + 1)
         for (auto num = 0; num < inputs.size(); ++num) {
             auto length = inputs[num]->valid_size();
@@ -91,7 +99,7 @@ Status Operator<X86, ACTIVATION, ET_forward_gemm, DType>::execute(
                 dst[i] = 1.0f / (1.0f + exp(-src[i]));
             }
         }
-    } else if (param.algo_active == AT_tanh) {
+    } else if (param.algo_act == "tanh") {
         // tanh : (exp(x) - exp(-x)) / (exp(x) + exp(-x))
         for (auto num = 0; num < inputs.size(); ++num) {
             auto length = inputs[num]->valid_size();
@@ -113,39 +121,8 @@ Status Operator<X86, ACTIVATION, ET_forward_gemm, DType>::execute(
     return S_Success;
 }
 
-template <DataType DType>
-Status Operator<X86, ACTIVATION, ET_forward_jit, DType>::execute(
-                            const std::vector<Tensor<X86> *>& inputs,
-                            std::vector<Tensor<X86> *>& outputs,
-                            ImplParam<X86, ACTIVATION>& param) {
-    const OP_DType *src = nullptr;
-    OP_DType *dst = nullptr;
-
-    if (param.algo_active == AT_relu) {
-        // relu: x > 0 ? x :0
-
-    } else if (param.algo_active == AT_leakyrelu) {
-        float scale = param.leakyrelu_scale;
-
-        // relu: x > 0 ? x : w * x
-
-    } else if (param.algo_active == AT_sigmoid) {
-        // sigmoid: 1/(exp(-x) + 1)
-
-    } else if (param.algo_active == AT_tanh) {
-        // tanh : (exp(x) - exp(-x)) / (exp(x) + exp(-x))
-
-    } else {
-        LOG(FATAL) << "unsupport activation function type !";
-    }
-
-    return S_Success;
-}
-
-template class Operator<X86, ACTIVATION, ET_forward_gemm, DT_FLOAT>;
-// template class Operator<X86, ACTIVATION, ET_forward_gemm, DT_INT8>;
-// template class Operator<X86, ACTIVATION, ET_forward_jit, DT_FLOAT>;
-// template class Operator<X86, ACTIVATION, ET_forward_jit, DT_INT8>;
+template class Operator<X86, ACT, FWD_REF, DT_FLOAT>;
+// template class Operator<X86, ACT, FWD_REF, DT_INT8>;
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc

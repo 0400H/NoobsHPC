@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors All Rights Reserve.
+/* Copyright (c) 2018 NoobsHPC Authors All Rights Reserve.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ Status test_conv_cpu(int mb, int g, int ih, int iw,
                      int ic, int oc, int kh, int kw,
                      int sh, int sw, int ph, int pw,
                      int dh, int dw, bool with_bias,
-                     AlgorithmType algo_act,
+                     std::string algo_act,
                      LayoutType layout = LT_NCHW) {
     auto oh = (ih + 2 * ph - kh / dh) / sh + 1;
     auto ow = (iw + 2 * pw - kw / dw) / sw + 1;
@@ -68,7 +68,8 @@ Status test_conv_cpu(int mb, int g, int ih, int iw,
     Shape InputShape(layout == LT_NCHW ? in_nchw : in_nhwc, layout);
     // {mb, g, oc/g, oh, ow} or {mb, oh, ow, g, oc/g}
     Shape OutShape(layout == LT_NCHW ? out_nchw : out_nhwc, layout);
-    Shape WeightShape({g, oc/g, kh, kw, ic/g}, LT_GOHWI);
+    // {g, oc/g, kh, kw, ic/g}
+    Shape WeightShape({oc, kh, kw, ic/g}, LT_NHWC);
 
     inputs.push_back(new Tensor<X86>);
     outputs.push_back(new Tensor<X86>);
@@ -82,7 +83,7 @@ Status test_conv_cpu(int mb, int g, int ih, int iw,
 
     #ifdef ICESWORD_DEBUG
         if (inDtype == DT_FLOAT) {
-            fill_matrix_debug<DT_FLOAT>(inputs[0]->mutable_data(), mb * g, ic/g * ih * iw, true, true);
+            fill_tensor_debug<DT_FLOAT>(inputs[0]->mutable_data(), mb * g, ic/g * ih * iw, true, true);
             fill_tensor_const(weights, 1);
             fill_tensor_const(bias, 10);
         }
@@ -94,28 +95,29 @@ Status test_conv_cpu(int mb, int g, int ih, int iw,
         }
     #endif
 
-    ImplParam<X86, ACTIVATION> act_param(algo_act);
-    ImplParam<X86, CONVOLUTION> impl_param(&weights, with_bias ? &bias : nullptr,
-                                           mb, g, ih, iw, ic, oh, ow, oc, kh, kw,
-                                           sh, sw, dh, dw, ph, pw, AT_nearest, act_param);
-    Operator<X86, CONVOLUTION, ET_forward_gemm, opDtype> conv_inference;
+    ImplParam<X86, ACT> act_param(algo_act);
+    ImplParam<X86, CONV> impl_param(&weights, with_bias ? &bias : nullptr,
+                                    g, sh, sw, dh, dw, ph, pw, "nearest", act_param);
+    Operator<X86, CONV, FWD_GEMM, opDtype> conv_inference;
+    Operator<X86, CONV, FWD_REF, opDtype> conv_reference;
 
-    auto status = conv_inference.init(inputs, outputs, impl_param);
-    if (status != S_Success) {
+    auto inference_status = conv_inference.init(inputs, outputs, impl_param);
+    auto reference_status = conv_reference.init(inputs, outputs_ref, impl_param);
+    if (inference_status != S_Success || reference_status != S_Success) {
         LOG(ERROR) << "Convolution x86 init failed!\n";
         return S_UnImplError;
     }
 
     conv_inference.execute(inputs, outputs, impl_param);
+    conv_reference.execute(inputs, outputs_ref, impl_param);
 
     long count = 0;
     if (inDtype == DT_FLOAT && outDtype == DT_FLOAT) {
-        conv_reference<float, float, float, float, X86>(inputs, outputs_ref, impl_param);
         count = count_diff<float>(outputs[0]->data(), outputs_ref[0]->data(),
                                   outputs[0]->valid_size(), 1e-3,  true, false);
     }
 
-    double quantized_error_rate = 100 * count / outputs[0]->valid_size();
+    double quantized_error_rate = 100.0 * count / outputs[0]->valid_size();
 
     if (quantized_error_rate < 0.05) {
         LOG(INFO) << "Test convolution x86 successed, quantized error is "
@@ -155,10 +157,9 @@ Status test_conv_cpu(int mb, int g, int ih, int iw,
 TEST(TestFunc, test_convolution) {
 
 #ifdef USE_X86_PLACE
-
     #ifdef ICESWORD_DEBUG
         for (auto layout : {LT_NCHW}) {
-        for (auto algo_act : {AT_invalid, AT_relu}) {
+        for (auto algo_act : {"relu"}) { // "no_act",
         for (auto with_bias : {false, true}) {
         for (auto mb : {5}) {
         for (auto g  : {1, 3}) {
@@ -180,7 +181,7 @@ TEST(TestFunc, test_convolution) {
         }}}}}}}}}}}}}}}}}
     #else
         for (auto layout : {LT_NCHW}) {
-        for (auto algo_act : {AT_invalid, AT_relu}) {
+        for (auto algo_act : {"no_act", "relu"}) {
         for (auto with_bias : {false, true}) {
         for (auto mb : {1, 5}) {
         for (auto g  : {1, 6}) {

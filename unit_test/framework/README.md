@@ -21,7 +21,7 @@
 #include <iostream>
 #include "nbtest.h"
 
-using ::noobsdnn::test::Test;
+using ::noobshpc::test::Test;
 
 /** 
  * \brief 自定义的测试class，继承自Test类。

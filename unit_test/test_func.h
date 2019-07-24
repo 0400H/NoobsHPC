@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
    limitations under the License.
 */
 
-#ifndef NBDNN_UNITTEST_TEST_FUNC_H
-#define NBDNN_UNITTEST_TEST_FUNC_H
+#ifndef NBHPC_UNITTEST_TEST_FUNC_H
+#define NBHPC_UNITTEST_TEST_FUNC_H
 
 #pragma once
 
@@ -35,4 +35,4 @@ protected:
 
 };
 
-#endif // NBDNN_UNITTEST_TEST_TEST_TEST_TENSOR_NV_H
+#endif // NBHPC_UNITTEST_TEST_TEST_TEST_TENSOR_NV_H

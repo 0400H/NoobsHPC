@@ -48,7 +48,7 @@ Status test_gemm_cpu(const size_t m, const size_t n, const size_t k,
     }
 
     #ifdef ICESWORD_VERBOSE
-        LOG(INFO) << "Test cblas gemm x86 {"
+        LOG(INFO) << "Test Gemm x86 {"
                   << " io_dtype:" << io_dtype
                   << " layout:"   << (col_major ? "col" : "row")
                   << " oc_mode:"  << oc_mode
@@ -88,7 +88,7 @@ Status test_gemm_cpu(const size_t m, const size_t n, const size_t k,
     tensor_c_ref.re_alloc(C_Shape, c_dtype);
 
     #ifdef ICESWORD_DEBUG
-        fill_matrix_debug<a_dtype>(tensor_a.mutable_data(), k, m, true, false);
+        fill_tensor_debug<a_dtype>(tensor_a.mutable_data(), k, m, true, false);
         fill_tensor_const(tensor_a, 1);
         fill_tensor_const(tensor_b, 1);
         fill_tensor_const(tensor_c, 100);
@@ -96,11 +96,11 @@ Status test_gemm_cpu(const size_t m, const size_t n, const size_t k,
         fill_tensor_rand(tensor_oc, -128, 127);
     #else
         if (a_dtype == DT_INT8) {
-            fill_tensor_rand(tensor_b, -128, 127);
+            fill_tensor_rand(tensor_a, -128, 127);
         } else {
-            fill_tensor_rand(tensor_b, 0, 255);
+            fill_tensor_rand(tensor_a, 0, 255);
         }
-        fill_tensor_rand(tensor_a, -128, 127);
+        fill_tensor_rand(tensor_b, -128, 127);
         fill_tensor_rand(tensor_oc, -128, 127);
         fill_tensor_rand(tensor_c, -128, 127);
     #endif
@@ -109,24 +109,12 @@ Status test_gemm_cpu(const size_t m, const size_t n, const size_t k,
     tensor_c_ref.copy_from(tensor_c);
 
     auto s8_a = a_dtype == DT_INT8 ? true : false;
-
-    // auto mem_a_pack = gemm.pack(tensor_a.data(), col_major, true, trans_a, m, n, k, alpha);
-    // auto mem_b_pack = gemm.pack(tensor_b.data(), col_major, false, trans_b, m, n, k, pack_a ? 1.f : alpha);
-    auto mem_a_pack = gemm.pack(tensor_a.data(), col_major, true, trans_a, m, n, k, lda, alpha);
-    auto mem_b_pack = gemm.pack(tensor_b.data(), col_major, false, trans_b, m, n, k, ldb, pack_a ? 1.f : alpha);
-
     auto mem_oc_s8a = gemm.compute_offset(s8_a, trans_b, offset_b, alpha, n, k, tensor_b.data());
     gemm.convert_mem_s82u8(s8_a, tensor_a.mutable_data(), m * k);
 
-    // compute lda, ldb, ldc automatic
-    // auto status = gemm.execute(pack_a ? mem_a_pack : tensor_a.data(),
-    //                            pack_b ? mem_b_pack :  tensor_b.data(),
-    //                            tensor_c.mutable_data(), tensor_oc.data(),
-    //                            m, n, k,  offset_a, offset_b, oc_mode,
-    //                            col_major, trans_a, trans_b, pack_a, pack_b,
-    //                            beta, alpha, lda, ldb, ldc);
-
     // compute lda, ldb, ldc by user
+    auto mem_a_pack = gemm.pack(tensor_a.data(), col_major, true, trans_a, m, n, k, lda, alpha);
+    auto mem_b_pack = gemm.pack(tensor_b.data(), col_major, false, trans_b, m, n, k, ldb, pack_a ? 1.f : alpha);
     auto status = gemm.execute(pack_a ? mem_a_pack : tensor_a.data(),
                                pack_b ? mem_b_pack :  tensor_b.data(),
                                tensor_c.mutable_data(), tensor_oc.data(),
@@ -134,8 +122,19 @@ Status test_gemm_cpu(const size_t m, const size_t n, const size_t k,
                                col_major, trans_a, trans_b, pack_a, pack_b,
                                beta, alpha, lda, ldb, ldc);
 
+    // compute lda, ldb, ldc automatic
+    // auto mem_a_pack = gemm.pack(tensor_a.data(), col_major, true, trans_a, m, n, k, alpha);
+    // auto mem_b_pack = gemm.pack(tensor_b.data(), col_major, false, trans_b, m, n, k, pack_a ? 1.f : alpha);
+    // auto status = gemm.execute(pack_a ? mem_a_pack : tensor_a.data(),
+    //                            pack_b ? mem_b_pack : tensor_b.data(),
+    //                            tensor_c.mutable_data(), tensor_oc.data(),
+    //                            m, n, k,  offset_a, offset_b, oc_mode,
+    //                            col_major, trans_a, trans_b, pack_a, pack_b,
+    //                            beta, alpha, lda, ldb, ldc);
+
     gemm.add_offset2mem_c(s8_a, oc_mode, mem_oc_s8a, tensor_c.mutable_data(), m, n);
 
+    gemm.release(mem_oc_s8a);
     gemm.release(mem_a_pack);
     gemm.release(mem_b_pack);
     if (status != S_Success) {
@@ -156,11 +155,11 @@ Status test_gemm_cpu(const size_t m, const size_t n, const size_t k,
     double quantized_error_rate = 100 * count / tensor_c.valid_size();
 
     if (quantized_error_rate < 0.5) {
-        LOG(INFO) << "Cblas gemm x86 successed, quantized error rate is "
+        LOG(INFO) << "Gemm x86 successed, quantized error rate is "
                   << quantized_error_rate << "%\n";
     } else {
         if (a_dtype == DT_FLOAT) {
-            LOG(ERROR) << "Cblas gemm x86 {"
+            LOG(ERROR) << "Gemm x86 {"
                        << " io_dtype:" << io_dtype
                        << " layout:"   << (col_major ? "col" : "row")
                        << " oc_mode:"  << oc_mode
@@ -179,7 +178,7 @@ Status test_gemm_cpu(const size_t m, const size_t n, const size_t k,
                        << " trans_a:"  << (trans_a ? "true" : "false")
                        << " trans_b:"  << (trans_b ? "true" : "false")
                        << " }";
-            LOG(ERROR) << "Cblas gemm x86 failed, quantized error rate is "
+            LOG(ERROR) << "Gemm x86 failed, quantized error rate is "
                        << quantized_error_rate << "%\n";
         }
     }

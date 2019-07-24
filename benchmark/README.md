@@ -2,7 +2,7 @@
 
 ## Benchmark Model  
 
-> Please note that you should transform caffe model or others into noobsdnn model with the help of [`external converter ->`](#)
+> Please note that you should transform caffe model or others into noobshpc model with the help of [`external converter ->`](#)
 
 ### GPU
 

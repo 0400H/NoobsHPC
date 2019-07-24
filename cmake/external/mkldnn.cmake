@@ -17,7 +17,7 @@
 include(ExternalProject)
 
 set(MKLDNN_PROJECT        "extern_mkldnn")
-set(MKLDNN_SOURCE_DIR     ${NBDNN_THIRD_PARTY_PATH}/mkldnn)
+set(MKLDNN_SOURCE_DIR     ${NBHPC_THIRD_PARTY_PATH}/mkldnn)
 set(MKLDNN_INSTALL_DIR    ${MKLDNN_SOURCE_DIR})
 set(MKLDNN_INCLUDE_DIR    "${MKLDNN_INSTALL_DIR}/include" CACHE PATH "mkldnn include directory." FORCE)
 set(MKLDNN_LIB            "${MKLDNN_INSTALL_DIR}/lib/libmkldnn.so" CACHE FILEPATH "mkldnn library." FORCE)
@@ -66,5 +66,5 @@ add_library(mkldnn SHARED IMPORTED GLOBAL)
 SET_PROPERTY(TARGET mkldnn PROPERTY IMPORTED_LOCATION ${MKLDNN_LIB})
 add_dependencies(mkldnn ${MKLDNN_PROJECT})
 
-list(APPEND NBDNN_ICESWORD_DEPENDENCIES mkldnn)
-list(APPEND NBDNN_LINKER_LIBS ${MKLDNN_LIB})
+list(APPEND NBHPC_ICESWORD_DEPENDENCIES mkldnn)
+list(APPEND NBHPC_LINKER_LIBS ${MKLDNN_LIB})

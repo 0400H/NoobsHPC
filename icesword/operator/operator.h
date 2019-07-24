@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+/* Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
    limitations under the License.
 */
 
-#ifndef NBDNN_ICESWORD_OPERATOR_OPERATOR_H
-#define NBDNN_ICESWORD_OPERATOR_OPERATOR_H
+#ifndef NBHPC_ICESWORD_OPERATOR_OPERATOR_H
+#define NBHPC_ICESWORD_OPERATOR_OPERATOR_H
 
 #pragma once
 
@@ -24,15 +24,15 @@
 #include "icesword/impl_param.h"
 #include "icesword/core/tensor/tensor_op.h"
 
-namespace noobsdnn{
+namespace noobshpc{
 namespace icesword{
 
 template<TargetType TType, typename IMPLParam>
-class OperatorBase {
+class ImplBase {
 public:
-    OperatorBase() {}
+    ImplBase() {}
 
-    virtual ~OperatorBase() {}
+    virtual ~ImplBase() {}
 
     /* public: should to be overrided by public function */
     virtual Status release() = 0;
@@ -61,10 +61,10 @@ public:
 template <TargetType target_type,
           OperatorType operator_type,
           ExecuteMethod execute_type,
-          DataType operator_dtype = DT_FLOAT>
-class Operator : public OperatorBase<target_type, ImplParam<target_type, operator_type>> {};
+          DataType data_dtype = DT_FLOAT>
+class Operator : public ImplBase<target_type, ImplParam<target_type, operator_type>> {};
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc
 
-#endif // NBDNN_ICESWORD_OPERATOR_OPERATOR_H
+#endif // NBHPC_ICESWORD_OPERATOR_OPERATOR_H

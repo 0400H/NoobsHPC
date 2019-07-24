@@ -1,4 +1,4 @@
-# Copyright (c) 2018 NoobsDNN Authors, Inc. All Rights Reserved.
+# Copyright (c) 2018 NoobsHPC Authors, Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,40 +12,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set(NBDNN_ICESWORD_STATIC_RELAY "" )
-set(NBDNN_ICESWORD_BASE_SRC "")
+set(NBHPC_ICESWORD_STATIC_RELAY "" )
+set(NBHPC_ICESWORD_BASE_SRC "")
 
-# fetch noobsdnn header dir recursively
-noobsdnn_fetch_include_recursively(${NBDNN_ICESWORD})
-noobsdnn_fetch_include_recursively(${NBDNN_ICESWORD}/core/timer)
-noobsdnn_fetch_include_recursively(${NBDNN_ICESWORD}/core/logger)
-noobsdnn_fetch_include_recursively(${NBDNN_ICESWORD}/core/tensor)
-noobsdnn_fetch_include_recursively(${NBDNN_ICESWORD}/core/operator)
-noobsdnn_fetch_include_recursively(${NBDNN_ICESWORD}/core/context)
+# fetch noobshpc header dir recursively
+noobshpc_fetch_include_recursively(${NBHPC_ICESWORD})
+noobshpc_fetch_include_recursively(${NBHPC_ICESWORD}/core/timer)
+noobshpc_fetch_include_recursively(${NBHPC_ICESWORD}/core/logger)
+noobshpc_fetch_include_recursively(${NBHPC_ICESWORD}/core/tensor)
+noobshpc_fetch_include_recursively(${NBHPC_ICESWORD}/core/operator)
+noobshpc_fetch_include_recursively(${NBHPC_ICESWORD}/core/context)
 
 if(USE_X86_PLACE)
-    noobsdnn_fetch_files_with_suffix(${NBDNN_ICESWORD}/operator/x86 "cpp" NBDNN_ICESWORD_BASE_SRC)
-    noobsdnn_fetch_files_with_suffix(${NBDNN_ICESWORD}/operator/x86/kernel "cpp" NBDNN_ICESWORD_BASE_SRC)
+    noobshpc_fetch_files_with_suffix(${NBHPC_ICESWORD}/operator/x86 "cpp" NBHPC_ICESWORD_BASE_SRC)
+    noobshpc_fetch_files_with_suffix(${NBHPC_ICESWORD}/operator/x86/kernel "cpp" NBHPC_ICESWORD_BASE_SRC)
 
     # compile cpp objs
-    # add_library(NBDNN_ICESWORD_BASE_OBJS OBJECT ${NBDNN_ICESWORD_BASE_SRC})
+    # add_library(NBHPC_ICESWORD_BASE_OBJS OBJECT ${NBHPC_ICESWORD_BASE_SRC})
 
-    set(NBDNN_ICESWORD_TEMP_COMMMON_LIB ${noobsdnn_lib_so})
+    set(NBHPC_ICESWORD_TEMP_COMMMON_LIB ${noobshpc_lib_so})
 
     # add icesword library to static
     if (BUILD_SHARED)
-        add_library(${NBDNN_ICESWORD_TEMP_COMMMON_LIB} SHARED ${NBDNN_ICESWORD_BASE_SRC})
+        add_library(${NBHPC_ICESWORD_TEMP_COMMMON_LIB} SHARED ${NBHPC_ICESWORD_BASE_SRC})
         if(USE_MKLDNN OR USE_MKLML OR USE_XBYAK)
-            message(STATUS ${NBDNN_ICESWORD_DEPENDENCIES})
-            add_dependencies(${NBDNN_ICESWORD_TEMP_COMMMON_LIB} ${NBDNN_ICESWORD_DEPENDENCIES})
+            message(STATUS ${NBHPC_ICESWORD_DEPENDENCIES})
+            add_dependencies(${NBHPC_ICESWORD_TEMP_COMMMON_LIB} ${NBHPC_ICESWORD_DEPENDENCIES})
         endif()
-        set_target_properties(${NBDNN_ICESWORD_TEMP_COMMMON_LIB} PROPERTIES VERSION ${VERSION})
-        target_link_libraries(${NBDNN_ICESWORD_TEMP_COMMMON_LIB} ${NBDNN_LINKER_LIBS})
-        set_target_properties(${NBDNN_ICESWORD_TEMP_COMMMON_LIB} PROPERTIES LIBRARY_OUTPUT_DIRECTORY
+        set_target_properties(${NBHPC_ICESWORD_TEMP_COMMMON_LIB} PROPERTIES VERSION ${VERSION})
+        target_link_libraries(${NBHPC_ICESWORD_TEMP_COMMMON_LIB} ${NBHPC_LINKER_LIBS})
+        set_target_properties(${NBHPC_ICESWORD_TEMP_COMMMON_LIB} PROPERTIES LIBRARY_OUTPUT_DIRECTORY
                               ${LIBRARY_OUTPUT_DIRECTORY})
     else()
-        ADD_LIBRARY(${NBDNN_ICESWORD_TEMP_COMMMON_LIB} STATIC ${NBDNN_ICESWORD_BASE_SRC})
-        set_target_properties(${NBDNN_ICESWORD_TEMP_COMMMON_LIB} PROPERTIES LIBRARY_OUTPUT_DIRECTORY
+        ADD_LIBRARY(${NBHPC_ICESWORD_TEMP_COMMMON_LIB} STATIC ${NBHPC_ICESWORD_BASE_SRC})
+        set_target_properties(${NBHPC_ICESWORD_TEMP_COMMMON_LIB} PROPERTIES LIBRARY_OUTPUT_DIRECTORY
                               ${LIBRARY_OUTPUT_DIRECTORY})
     endif ()
 endif()

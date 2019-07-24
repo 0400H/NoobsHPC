@@ -17,7 +17,7 @@
 include(ExternalProject)
 
 set(XBYAK_PROJECT       extern_xbyak)
-set(XBYAK_SOURCE_DIR	${NBDNN_THIRD_PARTY_PATH}/xbyak)
+set(XBYAK_SOURCE_DIR	${NBHPC_THIRD_PARTY_PATH}/xbyak)
 set(XBYAK_DOWNLOAD_DIR  ${XBYAK_SOURCE_DIR}/src/${XBYAK_PROJECT})
 set(XBYAK_INSTALL_ROOT  ${XBYAK_SOURCE_DIR})
 set(XBYAK_INCLUDE_DIR   ${XBYAK_INSTALL_ROOT}/include/xbyak)
@@ -39,4 +39,4 @@ ExternalProject_Add(
 
 add_library(xbyak SHARED IMPORTED GLOBAL)
 add_dependencies(xbyak ${XBYAK_PROJECT})
-list(APPEND NBDNN_ICESWORD_DEPENDENCIES xbyak)
+list(APPEND NBHPC_ICESWORD_DEPENDENCIES xbyak)

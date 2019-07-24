@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors All Rights Reserve.
+/* Copyright (c) 2018 NoobsHPC Authors All Rights Reserve.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,17 +13,16 @@
    limitations under the License.
 */
 
-#include "kernel/cpu_isa.h"
-#include "convolution_x86.h"
+#include "convolution.h"
 
-namespace noobsdnn {
+namespace noobshpc {
 namespace icesword {
 
 template <>
-Status Operator<X86, CONVOLUTION, ET_forward_gemm, DT_FLOAT>::execute(
-                                const std::vector<Tensor<X86> *>& inputs,
-                                std::vector<Tensor<X86> *>& outputs,
-                                ImplParam<X86, CONVOLUTION>& param) {
+Status Operator<X86, CONV, FWD_GEMM, DT_FLOAT>::execute(
+                    const std::vector<Tensor<X86> *>& inputs,
+                    std::vector<Tensor<X86> *>& outputs,
+                    ImplParam<X86, CONV>& param) {
     auto src_ = static_cast<const float*>(inputs[0]->data());
     auto wei_ = static_cast<const float*>(weight_);
     auto dst_ = static_cast<float*>(outputs[0]->mutable_data());
@@ -102,7 +101,7 @@ Status Operator<X86, CONVOLUTION, ET_forward_gemm, DT_FLOAT>::execute(
     }
 
     // todo: some optimization
-    if (algo_act == AT_relu) {
+    if (algo_act == "relu") {
         relu_inference->execute(outputs, outputs, param.act_param);
     }
 
@@ -110,13 +109,13 @@ Status Operator<X86, CONVOLUTION, ET_forward_gemm, DT_FLOAT>::execute(
 }
 
 template <>
-Status Operator<X86, CONVOLUTION, ET_forward_gemm, DT_INT8>::execute(
-                                const std::vector<Tensor<X86> *>& inputs,
-                                std::vector<Tensor<X86> *>& outputs,
-                                ImplParam<X86, CONVOLUTION>& param) {
+Status Operator<X86, CONV, FWD_GEMM, DT_INT8>::execute(
+                    const std::vector<Tensor<X86> *>& inputs,
+                    std::vector<Tensor<X86> *>& outputs,
+                    ImplParam<X86, CONV>& param) {
 
     return S_Success;
 }
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc

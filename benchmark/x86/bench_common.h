@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors All Rights Reserve.
+/* Copyright (c) 2018 NoobsHPC Authors All Rights Reserve.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
    limitations under the License.
 */
 
-#ifndef NBDNN_BENCHMARK_X86_COMMONH
-#define NBDNN_BENCHMARK_X86_COMMONH
+#ifndef NBHPC_BENCHMARK_X86_COMMONH
+#define NBHPC_BENCHMARK_X86_COMMONH
 
 #pragma once
 
@@ -28,7 +28,7 @@
 
 #include <string>
 
-using namespace noobsdnn::icesword;
+using namespace noobshpc::icesword;
 
 template <OperatorType opType>
 struct bench_operator_param {};
@@ -113,40 +113,40 @@ typedef struct {
     size_t channel;
 } bench_image_param;
 
-template <> struct bench_operator_param<ACTIVATION> {
-    AlgorithmType active_type;
+template <> struct bench_operator_param<ACT> {
+    std::string active_type;
 };
 
-template <> struct bench_operator_param<CONVOLUTION> {
+template <> struct bench_operator_param<CONV> {
     LayoutType layout;
     size_t batch, group, ih, iw, id, ic, oc,
            kh, kw, sh, sw, dh, dw, ph, pw;
     bool with_bias;
-    bench_operator_param<ACTIVATION> act_param;
+    bench_operator_param<ACT> act_param;
 };
 
-template <> struct bench_operator_param<INNERPRODUCT> {
+template <> struct bench_operator_param<FC> {
     size_t M;
     size_t N;
     std::vector<size_t> K;
     bool with_bias;
     ExecuteMethod algo_type;
-    bench_operator_param<ACTIVATION> act_param;
+    bench_operator_param<ACT> act_param;
 };
 
-template <> struct benchmark_operator_param<ACTIVATION> {
-    bench_operator_param<ACTIVATION> act_param;
+template <> struct benchmark_operator_param<ACT> {
+    bench_operator_param<ACT> act_param;
     bench_datatype_param dtype_param;
 };
 
-template <> struct benchmark_operator_param<CONVOLUTION> {
-    bench_operator_param<CONVOLUTION> conv_param;
+template <> struct benchmark_operator_param<CONV> {
+    bench_operator_param<CONV> conv_param;
     bench_datatype_param dtype_param;
 };
 
-template <> struct benchmark_operator_param<INNERPRODUCT> {
-    bench_operator_param<INNERPRODUCT> ip_param;
+template <> struct benchmark_operator_param<FC> {
+    bench_operator_param<FC> ip_param;
     bench_datatype_param dtype_param;
 };
 
-#endif // NBDNN_BENCHMARK_X86_COMMONH
+#endif // NBHPC_BENCHMARK_X86_COMMONH

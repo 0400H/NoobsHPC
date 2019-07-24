@@ -1,4 +1,4 @@
-/*  Copyright (c) 2018 NoobsDNN Authors All Rights Reserve.
+/*  Copyright (c) 2018 NoobsHPC Authors All Rights Reserve.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -13,17 +13,17 @@
     limitations under the License.
 */
 
-#ifndef NBDNN_ICESWORD_OPERATOR_X86_CONVOLUTION_H
-#define NBDNN_ICESWORD_OPERATOR_X86_CONVOLUTION_H
+#ifndef NBHPC_ICESWORD_OPERATOR_X86_CONV_H
+#define NBHPC_ICESWORD_OPERATOR_X86_CONV_H
 
-#include "icesword/operator/x86/common_x86.h"
+#include "icesword/operator/x86/common.h"
 
-namespace noobsdnn {
+namespace noobshpc {
 namespace icesword {
 
 template <ExecuteMethod EType, DataType DType>
-class Operator<X86, CONVOLUTION, EType, DType> : public
-      OperatorBase<X86, ImplParam<X86, CONVOLUTION>> {
+class Operator<X86, CONV, EType, DType> : public
+      ImplBase<X86, ImplParam<X86, CONV>> {
 
 public:
     typedef typename DataTrait<X86, DType>::Dtype OP_DType;
@@ -43,17 +43,17 @@ public:
 
     Status init(const std::vector<Tensor<X86> *>& inputs,
                 std::vector<Tensor<X86> *>& outputs,
-                ImplParam<X86, CONVOLUTION>& param) override;
+                ImplParam<X86, CONV>& param) override;
 
     Status execute(const std::vector<Tensor<X86> *>& inputs,
                    std::vector<Tensor<X86> *>& outputs,
-                   ImplParam<X86, CONVOLUTION>& param) override;
+                   ImplParam<X86, CONV>& param) override;
 
     Status release() override;
 
 private:
     CBLAS_GEMM<X86, DType> gemm;
-    Operator<X86, ACTIVATION, ET_forward_gemm, DType>* relu_inference;
+    Operator<X86, ACT, FWD_REF, DType>* relu_inference;
 
     bool col_major;
     bool trans_src;
@@ -95,27 +95,27 @@ private:
     size_t d_w;
     size_t p_h;
     size_t p_w;
-    AlgorithmType rm;
-    AlgorithmType algo_act;
+    std::string rm;
+    std::string algo_act;
 
     Status init_check(const std::vector<Tensor<X86> *>& inputs,
                       std::vector<Tensor<X86> *>& outputs,
-                      ImplParam<X86, CONVOLUTION>& param) override;
+                      ImplParam<X86, CONV>& param) override;
 
     Status init_conf(const std::vector<Tensor<X86> *>& inputs,
                      std::vector<Tensor<X86> *>& outputs,
-                     ImplParam<X86, CONVOLUTION>& param) override;
+                     ImplParam<X86, CONV>& param) override;
 
     Status init_source(const std::vector<Tensor<X86> *>& inputs,
                        std::vector<Tensor<X86> *>& outputs,
-                       ImplParam<X86, CONVOLUTION>& param) override;
+                       ImplParam<X86, CONV>& param) override;
 
     Status img2col(const void *img, void *col);
 
 };
 
 template <ExecuteMethod EType, DataType DType>
-Status Operator<X86, CONVOLUTION, EType, DType>::release() {
+Status Operator<X86, CONV, EType, DType>::release() {
     if (accept_) {
         gfree(accept_);
         accept_ = nullptr;
@@ -141,10 +141,10 @@ Status Operator<X86, CONVOLUTION, EType, DType>::release() {
 }
 
 template <ExecuteMethod EType, DataType DType>
-Status Operator<X86, CONVOLUTION, EType, DType>::init(
+Status Operator<X86, CONV, EType, DType>::init(
                 const std::vector<Tensor<X86> *>& inputs,
                 std::vector<Tensor<X86> *>& outputs,
-                ImplParam<X86, CONVOLUTION>& param) {
+                ImplParam<X86, CONV>& param) {
     if (init_check(inputs, outputs, param) != S_Success) {
         return S_UnImplError;
     }
@@ -159,10 +159,10 @@ Status Operator<X86, CONVOLUTION, EType, DType>::init(
 };
 
 template <ExecuteMethod EType, DataType DType>
-Status Operator<X86, CONVOLUTION, EType, DType>::init_check(
+Status Operator<X86, CONV, EType, DType>::init_check(
                 const std::vector<Tensor<X86> *>& inputs,
                 std::vector<Tensor<X86> *>& outputs,
-                ImplParam<X86, CONVOLUTION>& param) {
+                ImplParam<X86, CONV>& param) {
     if (inputs.size() == 0 ||
         outputs.size() == 0 ||
         inputs[0] == nullptr ||
@@ -184,8 +184,11 @@ Status Operator<X86, CONVOLUTION, EType, DType>::init_check(
         }
     }
 
-    auto channel_check = param.in_channel % param.group
-                       + param.out_channel % param.group;
+    auto weight_shape = param.get_weight()->shape();
+    auto g_oc = weight_shape[0];
+    auto g_ic = weight_shape[3] * group;
+    auto channel_check = g_ic % param.group
+                       + g_oc % param.group;
     if ((group > 1) && (channel_check > 0)) {
         LOG(ERROR) << "wrong input or output channel !";
         return S_InvalidValue;
@@ -206,20 +209,17 @@ Status Operator<X86, CONVOLUTION, EType, DType>::init_check(
 }
 
 template <ExecuteMethod EType, DataType DType>
-Status Operator<X86, CONVOLUTION, EType, DType>::init_conf(
+Status Operator<X86, CONV, EType, DType>::init_conf(
                 const std::vector<Tensor<X86> *>& inputs,
                 std::vector<Tensor<X86> *>& outputs,
-                ImplParam<X86, CONVOLUTION>& param) {
-    batch = param.batch;
+                ImplParam<X86, CONV>& param) {
+    with_bias = param.get_bias() ? true : false;
+    offset_mode = with_bias ? 'C' : 'N';
+    bias_ = with_bias ? param.get_bias()->data() : nullptr;
+    weight_ = param.get_weight()->data();
+    layout = inputs[0]->get_layout();
+
     group = param.group;
-    i_h = param.in_height;
-    i_w = param.in_width;
-    g_ic = param.in_channel;
-    o_h = param.out_height;
-    o_w = param.out_width;
-    g_oc = param.out_channel;
-    k_h = param.kernel_h;
-    k_w = param.kernel_w;
     s_h = param.stride_h;
     s_w = param.stride_w;
     d_h = param.dilation_h;
@@ -227,32 +227,42 @@ Status Operator<X86, CONVOLUTION, EType, DType>::init_conf(
     p_h = param.pad_h;
     p_w = param.pad_w;
     rm = param.rm;
-    algo_act = param.act_param.algo_active;
+    algo_act = param.act_param.algo_act;
 
-    i_c = g_ic / group;
-    o_c = g_oc / group;
-    oh_ow = o_h * o_w;
-    ic_ih_iw = i_c * i_h * i_w;
-    kh_kw_ic = k_h * k_w * i_c;
-    with_img2col = true;
-    // with_img2col = !(o_h == i_h && o_w == i_w &&
-    //                  k_h * k_w == 1 && group == 1);
+    auto input_shape = inputs[0]->shape();
+    auto output_shape = outputs[0]->shape();
+    auto weight_shape = param.get_weight()->shape();
 
-    with_bias = param.get_bias() ? true : false;
-    offset_mode = with_bias ? 'C' : 'N';
-    bias_ = with_bias ? param.get_bias()->data() : nullptr;
-    weight_ = param.get_weight()->data();
-
-    layout = inputs[0]->get_layout();
+    batch = input_shape[0];
+    g_oc = weight_shape[0];
+    k_h = weight_shape[1];
+    k_w = weight_shape[2];
+    g_ic = weight_shape[3] * group;
     if (layout == LT_NCHW) {
         col_major = false;
         trans_src = false;
         trans_wei = false;
-    } else {
+        i_h = input_shape[2];
+        i_w = input_shape[3];
+    } else if (layout == LT_NHWC) {
         col_major = true;
         trans_src = true;
         trans_wei = true;
+        i_h = input_shape[1];
+        i_w = input_shape[2];
     }
+
+    i_c = g_ic / group;
+    o_c = g_oc / group;
+    o_h = (i_h + 2 * p_h - k_h / d_h) / s_h + 1;
+    o_w = (i_w + 2 * p_w - k_w / d_w) / s_w + 1;
+    oh_ow = o_h * o_w;
+    ic_ih_iw = i_c * i_h * i_w;
+    kh_kw_ic = k_h * k_w * i_c;
+
+    with_img2col = true;
+    // with_img2col = !(o_h == i_h && o_w == i_w &&
+    //                  k_h * k_w == 1 && group == 1);
 
     auto mb_g = batch * group;
     auto omp_max_threads = omp_get_max_threads();
@@ -267,8 +277,8 @@ Status Operator<X86, CONVOLUTION, EType, DType>::init_conf(
                      omp_mb_g_threads : 1;
     }
 
-    if (algo_act == AT_relu) {
-        relu_inference = new Operator<X86, ACTIVATION, ET_forward_gemm, DType>;
+    if (algo_act == "relu") {
+        relu_inference = new Operator<X86, ACT, FWD_REF, DType>;
     }
 
     #ifdef ICESWORD_VERBOSE
@@ -301,10 +311,15 @@ Status Operator<X86, CONVOLUTION, EType, DType>::init_conf(
 }
 
 template <ExecuteMethod EType, DataType DType>
-Status Operator<X86, CONVOLUTION, EType, DType>::init_source(
+Status Operator<X86, CONV, EType, DType>::init_source(
                     const std::vector<Tensor<X86> *>& inputs,
                     std::vector<Tensor<X86> *>& outputs,
-                    ImplParam<X86, CONVOLUTION>& param) {
+                    ImplParam<X86, CONV>& param) {
+    if (EType == FWD_REF) {
+        return S_Success;
+    }
+
+    // LOG(INFO) << thread_num << ' ' << kh_kw_ic << ' ' << oh_ow;
     column_ = gcalloc(thread_num * kh_kw_ic * oh_ow, sizeof(OP_DType));
     CHECK_EQ((column_ != nullptr), true) << "calloc memory failed !";
 
@@ -337,7 +352,7 @@ Status Operator<X86, CONVOLUTION, EType, DType>::init_source(
 }
 
 template <ExecuteMethod EType, DataType DType>
-Status Operator<X86, CONVOLUTION, EType, DType>::img2col(const void *img,
+Status Operator<X86, CONV, EType, DType>::img2col(const void *img,
                                                          void *col) {
     CHECK_EQ((img != nullptr), true) << "wrong empty pointer !";
     CHECK_EQ((col != nullptr), true) << "wrong empty pointer !";
@@ -377,6 +392,6 @@ Status Operator<X86, CONVOLUTION, EType, DType>::img2col(const void *img,
 }
 
 } // namespace icesword
-} // namespace noobsdnn
+} // namespace noobshpc
 
-#endif // NBDNN_ICESWORD_OPERATOR_X86_CONVOLUTION_H
+#endif // NBHPC_ICESWORD_OPERATOR_X86_CONV_H

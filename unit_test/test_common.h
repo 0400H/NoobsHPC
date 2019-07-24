@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 NoobsDNN Authors All Rights Reserve.
+/* Copyright (c) 2018 NoobsHPC Authors All Rights Reserve.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
    limitations under the License.
 */
 
-#ifndef NBDNN_UNITTEST_TEST_COMMONH
-#define NBDNN_UNITTEST_TEST_COMMONH
+#ifndef NBHPC_UNITTEST_TEST_COMMONH
+#define NBHPC_UNITTEST_TEST_COMMONH
 
 #pragma once
 
@@ -31,7 +31,7 @@
 #include "icesword/operator/engine.h"
 #include "icesword/operator/operator.h"
 
-using namespace noobsdnn::icesword;
+using namespace noobshpc::icesword;
 
 template <typename dtype>
 static inline int count_diff(const void *src_1, const void *src_2, int lenofmem,
@@ -44,7 +44,7 @@ static inline int count_diff(const void *src_1, const void *src_2, int lenofmem,
         max_ratio = 5e-3;
     }
 
-    int count = 0;
+    long count = 0;
     // not use omp, top to down
     for (int i = 0; i < lenofmem; ++i) {
         double ratio = fabs(src1[i] - src2[i]) / fabs(src1[i] + src2[i]);
@@ -77,4 +77,4 @@ bool trunc_odd_value(typename DataTrait<X86, src_dtype>::Dtype src) {
     }
 }
 
-#endif // NBDNN_UNITTEST_TEST_COMMONH
+#endif // NBHPC_UNITTEST_TEST_COMMONH
